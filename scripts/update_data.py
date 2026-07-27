@@ -2,6 +2,7 @@
 """Met à jour les données statiques de la carte des feux.
 
 - Feux actifs : NASA FIRMS, VIIRS NOAA-20 NRT, 7 jours.
+- Filtrage conservateur des sources thermiques industrielles probables.
 - Surfaces brûlées : périmètres vectoriels EFFIS MODIS, 30 jours.
 
 Le téléchargement EFFIS utilise en priorité le Shapefile officiel diffusé par
@@ -14,6 +15,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import math
 import os
 import sys
 import tempfile
@@ -25,7 +27,7 @@ from typing import Any, Iterable
 import requests
 import shapefile
 from requests.adapters import HTTPAdapter
-from shapely.geometry import GeometryCollection, MultiPolygon, Polygon, box, mapping, shape
+from shapely.geometry import GeometryCollection, MultiPolygon, Point, Polygon, box, mapping, shape
 from shapely.ops import unary_union
 from shapely.validation import make_valid
 from urllib3.util.retry import Retry
@@ -36,6 +38,8 @@ FIRES_PATH = DATA_DIR / "fires.geojson"
 BURNED_PATH = DATA_DIR / "burned.geojson"
 LEGACY_BURNED_PATH = DATA_DIR / "burned.png"
 MANIFEST_PATH = DATA_DIR / "manifest.json"
+THERMAL_HISTORY_PATH = DATA_DIR / "thermal-history.json"
+INDUSTRIAL_THERMAL_PATH = DATA_DIR / "industrial-thermal.geojson"
 
 EUROPE_BBOX = (-25.0, 34.0, 42.0, 72.0)  # ouest, sud, est, nord
 EUROPE_CLIP = box(*EUROPE_BBOX)
@@ -43,6 +47,57 @@ FIRMS_SOURCE = "VIIRS_NOAA20_NRT"
 EFFIS_WFS_URL = "https://maps.effis.emergency.copernicus.eu/effis"
 EFFIS_TYPENAME = "ms:modis.ba.poly"
 MAX_EFFIS_DOWNLOAD_BYTES = 250 * 1024 * 1024
+
+# Grille proche de la résolution VIIRS (375 m). Un point n'est classé comme
+# source thermique récurrente qu'après observation pendant au moins huit jours
+# distincts sur une fenêtre de trente jours. Les périmètres EFFIS déjà connus
+# protègent les feux de végétation persistants contre ce filtrage automatique.
+THERMAL_CELL_DEGREES = 0.004
+THERMAL_HISTORY_DAYS = 30
+RECURRENT_MIN_DISTINCT_DAYS = 8
+BURNED_PROTECTION_BUFFER_DEGREES = 0.006
+
+# Masque initial volontairement limité à des installations précisément
+# localisées et signalées comme faux positifs récurrents. Le rayon reste proche
+# d'un à trois pixels VIIRS afin de ne pas masquer une zone entière.
+STATIC_THERMAL_SITES: tuple[dict[str, Any], ...] = (
+    {
+        "name": "ArcelorMittal Dunkerque",
+        "longitude": 2.283794,
+        "latitude": 51.032392,
+        "radius_km": 1.15,
+    },
+    {
+        "name": "Terminal méthanier de Dunkerque",
+        "longitude": 2.19653,
+        "latitude": 51.03361,
+        "radius_km": 1.0,
+    },
+    {
+        "name": "ArcelorMittal Fos-sur-Mer",
+        "longitude": 4.88983,
+        "latitude": 43.4368,
+        "radius_km": 1.15,
+    },
+    {
+        "name": "Terminal méthanier de Fos-Cavaou",
+        "longitude": 4.90051,
+        "latitude": 43.41928,
+        "radius_km": 1.0,
+    },
+    {
+        "name": "Raffinerie de Fos",
+        "longitude": 4.92592,
+        "latitude": 43.44551,
+        "radius_km": 1.1,
+    },
+    {
+        "name": "Incinérateur de Fos-sur-Mer",
+        "longitude": 4.85471,
+        "latitude": 43.41805,
+        "radius_km": 0.9,
+    },
+)
 
 
 def log(message: str) -> None:
@@ -133,6 +188,147 @@ def download_csv(session: requests.Session, url: str) -> list[dict[str, str]]:
     return list(csv.DictReader(io.StringIO(text)))
 
 
+
+def haversine_km(longitude_a: float, latitude_a: float, longitude_b: float, latitude_b: float) -> float:
+    radius_km = 6371.0088
+    phi_a = math.radians(latitude_a)
+    phi_b = math.radians(latitude_b)
+    delta_phi = math.radians(latitude_b - latitude_a)
+    delta_lambda = math.radians(longitude_b - longitude_a)
+    value = (
+        math.sin(delta_phi / 2) ** 2
+        + math.cos(phi_a) * math.cos(phi_b) * math.sin(delta_lambda / 2) ** 2
+    )
+    return 2 * radius_km * math.asin(min(1.0, math.sqrt(value)))
+
+
+def thermal_cell_key(longitude: float, latitude: float) -> str:
+    longitude_index = math.floor(longitude / THERMAL_CELL_DEGREES)
+    latitude_index = math.floor(latitude / THERMAL_CELL_DEGREES)
+    return f"{longitude_index}:{latitude_index}"
+
+
+def thermal_cell_center(cell_key: str) -> tuple[float, float]:
+    longitude_index, latitude_index = (int(value) for value in cell_key.split(":", 1))
+    longitude = (longitude_index + 0.5) * THERMAL_CELL_DEGREES
+    latitude = (latitude_index + 0.5) * THERMAL_CELL_DEGREES
+    return longitude, latitude
+
+
+def load_thermal_history(today: date) -> dict[str, set[str]]:
+    cutoff = today - timedelta(days=THERMAL_HISTORY_DAYS - 1)
+    history: dict[str, set[str]] = {}
+    try:
+        raw = json.loads(THERMAL_HISTORY_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, AttributeError):
+        return history
+
+    for cell_key, values in (raw.get("cells") or {}).items():
+        dates: set[str] = set()
+        for raw_date in values.get("dates", []):
+            try:
+                parsed = date.fromisoformat(str(raw_date))
+            except ValueError:
+                continue
+            if cutoff <= parsed <= today:
+                dates.add(parsed.isoformat())
+        if dates:
+            history[str(cell_key)] = dates
+    return history
+
+
+def save_thermal_history(history: dict[str, set[str]], now: datetime) -> None:
+    cells: dict[str, dict[str, Any]] = {}
+    for cell_key, dates in sorted(history.items()):
+        # Les cellules vues un seul jour ne sont pas persistées: l'appel FIRMS
+        # des sept derniers jours permet de les reconstruire si elles récidivent.
+        # Cela limite fortement la taille et l'historique Git du fichier.
+        if len(dates) < 2:
+            continue
+        longitude, latitude = thermal_cell_center(cell_key)
+        ordered_dates = sorted(dates)
+        cells[cell_key] = {
+            "longitude": round(longitude, 5),
+            "latitude": round(latitude, 5),
+            "dates": ordered_dates,
+            "distinct_days": len(ordered_dates),
+            "last_seen": ordered_dates[-1],
+        }
+    payload = {
+        "version": 1,
+        "updated_at": now.isoformat().replace("+00:00", "Z"),
+        "window_days": THERMAL_HISTORY_DAYS,
+        "cell_degrees": THERMAL_CELL_DEGREES,
+        "cells": cells,
+    }
+    atomic_write(
+        THERMAL_HISTORY_PATH,
+        json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8"),
+    )
+
+
+def load_burned_protection_geometry() -> Any | None:
+    try:
+        collection = json.loads(BURNED_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, AttributeError):
+        return None
+
+    geometries = []
+    for feature in collection.get("features", []):
+        geometry_json = feature.get("geometry")
+        if not geometry_json:
+            continue
+        try:
+            geometry = shape(geometry_json)
+            if not geometry.is_empty:
+                geometries.append(geometry)
+        except Exception:
+            continue
+    if not geometries:
+        return None
+    try:
+        return unary_union(geometries).buffer(BURNED_PROTECTION_BUFFER_DEGREES)
+    except Exception:
+        return None
+
+
+def known_thermal_site(longitude: float, latitude: float) -> dict[str, Any] | None:
+    for site in STATIC_THERMAL_SITES:
+        distance = haversine_km(
+            longitude,
+            latitude,
+            float(site["longitude"]),
+            float(site["latitude"]),
+        )
+        if distance <= float(site["radius_km"]):
+            return site
+    return None
+
+
+def probable_industrial_reason(
+    longitude: float,
+    latitude: float,
+    cell_key: str,
+    history: dict[str, set[str]],
+    burned_protection: Any | None,
+) -> tuple[str, str | None] | None:
+    point = Point(longitude, latitude)
+    if burned_protection is not None:
+        try:
+            if burned_protection.covers(point):
+                return None
+        except Exception:
+            pass
+
+    site = known_thermal_site(longitude, latitude)
+    if site is not None:
+        return "site_industriel_connu", str(site["name"])
+
+    distinct_days = len(history.get(cell_key, set()))
+    if distinct_days >= RECURRENT_MIN_DISTINCT_DAYS:
+        return "anomalie_thermique_recurrente", None
+    return None
+
 def update_active_fires(session: requests.Session, manifest: dict[str, Any]) -> bool:
     map_key = os.environ.get("FIRMS_MAP_KEY", "").strip()
     if not map_key:
@@ -146,9 +342,12 @@ def update_active_fires(session: requests.Session, manifest: dict[str, Any]) -> 
     now = utc_now()
     oldest_allowed = now - timedelta(days=7, hours=3)
     seen: set[tuple[str, str, str, str]] = set()
-    features: list[dict[str, Any]] = []
+    candidates: list[dict[str, Any]] = []
     excluded_low_confidence = 0
     excluded_non_vegetation = 0
+
+    history = load_thermal_history(today)
+    cutoff = today - timedelta(days=THERMAL_HISTORY_DAYS - 1)
 
     for row in older_rows + recent_rows:
         confidence_raw = (row.get("confidence") or "").strip().lower()
@@ -182,22 +381,91 @@ def update_active_fires(session: requests.Session, manifest: dict[str, Any]) -> 
         except ValueError:
             frp = 0.0
 
-        features.append({
-            "type": "Feature",
-            "geometry": {"type": "Point", "coordinates": [longitude, latitude]},
-            "properties": {
-                "age_h": round(age_hours, 1),
-                "recency": recency_class(age_hours),
-                "frp": frp,
-                "confidence": "high" if confidence_raw in {"h", "high"} else "nominal",
-            },
+        cell_key = thermal_cell_key(longitude, latitude)
+        history.setdefault(cell_key, set()).add(detected_at.date().isoformat())
+        candidates.append({
+            "longitude": longitude,
+            "latitude": latitude,
+            "detected_at": detected_at,
+            "age_hours": age_hours,
+            "frp": frp,
+            "confidence": "high" if confidence_raw in {"h", "high"} else "nominal",
+            "cell_key": cell_key,
         })
 
-    features.sort(key=lambda feature: feature["properties"]["age_h"], reverse=True)
-    collection = {"type": "FeatureCollection", "features": features}
-    payload = json.dumps(collection, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-    atomic_write(FIRES_PATH, payload)
+    for cell_key in list(history):
+        retained = {
+            raw_date
+            for raw_date in history[cell_key]
+            if cutoff <= date.fromisoformat(raw_date) <= today
+        }
+        if retained:
+            history[cell_key] = retained
+        else:
+            del history[cell_key]
+    save_thermal_history(history, now)
 
+    burned_protection = load_burned_protection_geometry()
+    features: list[dict[str, Any]] = []
+    industrial_features: list[dict[str, Any]] = []
+    excluded_known_sites = 0
+    excluded_recurrent = 0
+
+    for candidate in candidates:
+        reason = probable_industrial_reason(
+            candidate["longitude"],
+            candidate["latitude"],
+            candidate["cell_key"],
+            history,
+            burned_protection,
+        )
+        feature = {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [candidate["longitude"], candidate["latitude"]],
+            },
+            "properties": {
+                "age_h": round(candidate["age_hours"], 1),
+                "recency": recency_class(candidate["age_hours"]),
+                "frp": candidate["frp"],
+                "confidence": candidate["confidence"],
+            },
+        }
+
+        if reason is not None:
+            reason_code, site_name = reason
+            feature["properties"].update({
+                "filter_reason": reason_code,
+                "site_name": site_name,
+                "recurrent_days": len(history.get(candidate["cell_key"], set())),
+            })
+            industrial_features.append(feature)
+            if reason_code == "site_industriel_connu":
+                excluded_known_sites += 1
+            else:
+                excluded_recurrent += 1
+            continue
+
+        features.append(feature)
+
+    features.sort(key=lambda feature: feature["properties"]["age_h"], reverse=True)
+    industrial_features.sort(key=lambda feature: feature["properties"]["age_h"], reverse=True)
+
+    collection = {"type": "FeatureCollection", "features": features}
+    industrial_collection = {"type": "FeatureCollection", "features": industrial_features}
+    payload = json.dumps(collection, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    industrial_payload = json.dumps(
+        industrial_collection,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    atomic_write(FIRES_PATH, payload)
+    atomic_write(INDUSTRIAL_THERMAL_PATH, industrial_payload)
+
+    recurrent_cells = sum(
+        1 for dates in history.values() if len(dates) >= RECURRENT_MIN_DISTINCT_DAYS
+    )
     manifest["active_fires"] = {
         "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
         "generated_at": now.isoformat().replace("+00:00", "Z"),
@@ -206,11 +474,23 @@ def update_active_fires(session: requests.Session, manifest: dict[str, Any]) -> 
         "count": len(features),
         "excluded_low_confidence": excluded_low_confidence,
         "excluded_non_vegetation": excluded_non_vegetation,
+        "excluded_probable_industrial": len(industrial_features),
+        "excluded_known_industrial_sites": excluded_known_sites,
+        "excluded_recurrent_thermal_cells": excluded_recurrent,
         "geographic_extent": list(EUROPE_BBOX),
+        "industrial_filter": {
+            "known_sites": len(STATIC_THERMAL_SITES),
+            "history_window_days": THERMAL_HISTORY_DAYS,
+            "recurrent_threshold_distinct_days": RECURRENT_MIN_DISTINCT_DAYS,
+            "recurrent_cells_in_history": recurrent_cells,
+            "audit_file": INDUSTRIAL_THERMAL_PATH.name,
+        },
     }
     log(
         f"Feux actifs: {len(features)} détections enregistrées; "
-        f"{excluded_low_confidence} de faible confiance écartées."
+        f"{excluded_low_confidence} de faible confiance, "
+        f"{excluded_non_vegetation} de type non végétal et "
+        f"{len(industrial_features)} sources industrielles probables écartées."
     )
     return True
 
