@@ -215,21 +215,21 @@
         map.addLayer({
           id: 'labels-countries-major', type: 'symbol', source: 'french-labels',
           filter: ['all', ['==', ['get', 'kind'], 'country'], ['==', ['get', 'rank'], 1]],
-          minzoom: 2.5, maxzoom: 5.8,
+          minzoom: 2.5, maxzoom: 5.15,
           layout: { ...commonCountryLayout, 'text-size': ['interpolate', ['linear'], ['zoom'], 3, 10.5, 6, 13], 'text-transform': 'uppercase' },
           paint: commonCountryPaint
         });
         map.addLayer({
           id: 'labels-countries-medium', type: 'symbol', source: 'french-labels',
           filter: ['all', ['==', ['get', 'kind'], 'country'], ['==', ['get', 'rank'], 2]],
-          minzoom: 3.45, maxzoom: 6.15,
+          minzoom: 3.45, maxzoom: 5.35,
           layout: { ...commonCountryLayout, 'text-size': ['interpolate', ['linear'], ['zoom'], 3.5, 9.5, 6, 12], 'text-transform': 'uppercase' },
           paint: commonCountryPaint
         });
         map.addLayer({
           id: 'labels-countries-small', type: 'symbol', source: 'french-labels',
           filter: ['all', ['==', ['get', 'kind'], 'country'], ['==', ['get', 'rank'], 3]],
-          minzoom: 5.15, maxzoom: 6.7,
+          minzoom: 5.0, maxzoom: 5.55,
           layout: { ...commonCountryLayout, 'text-size': 10, 'text-transform': 'uppercase' },
           paint: commonCountryPaint
         });
@@ -273,19 +273,30 @@
         map.addSource('municipalities', sourceDefinition);
 
         const frenchName = ['coalesce', ['get', 'name:fr'], ['get', 'name_fr'], ['get', 'name']];
-        const notCapital = ['!', ['has', 'capital']];
+        // Le champ capital vaut aussi 3 à 6 pour de nombreuses capitales régionales.
+        // On exclut seulement les capitales nationales (2), déjà gérées par la couche française dédiée.
+        const notNationalCapital = [
+          'any',
+          ['!', ['has', 'capital']],
+          ['!=', ['to-string', ['get', 'capital']], '2']
+        ];
         const commonLayout = {
           'text-field': frenchName,
           'text-font': ['Noto Sans Regular'],
           'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
           'text-radial-offset': 0.35,
           'text-justify': 'auto',
-          'text-max-width': 9,
-          'text-padding': 2.5,
+          'text-max-width': 10,
+          'text-padding': 2.2,
           'text-allow-overlap': false,
           'text-ignore-placement': false,
           'text-optional': true,
-          'symbol-sort-key': ['coalesce', ['get', 'rank'], 99]
+          // Les capitales régionales sont prioritaires, puis les villes selon leur rang.
+          'symbol-sort-key': [
+            'case',
+            ['has', 'capital'], -10,
+            ['coalesce', ['get', 'rank'], 99]
+          ]
         };
         const commonPaint = {
           'text-color': '#68727a',
@@ -299,13 +310,28 @@
           type: 'symbol',
           source: 'municipalities',
           'source-layer': 'place',
-          minzoom: 5.35,
-          filter: ['all', notCapital, ['==', ['get', 'class'], 'city'], ['<=', ['coalesce', ['get', 'rank'], 99], 7]],
+          minzoom: 4.9,
+          filter: [
+            'all',
+            notNationalCapital,
+            ['==', ['get', 'class'], 'city'],
+            [
+              'any',
+              ['has', 'capital'],
+              ['<=', ['coalesce', ['get', 'rank'], 99], 10]
+            ]
+          ],
           layout: {
             ...commonLayout,
-            'text-size': ['interpolate', ['linear'], ['zoom'], 5.35, 10, 7.5, 12.2, 10.5, 13.5]
+            'text-size': ['interpolate', ['linear'], ['zoom'], 4.9, 10.2, 7.5, 12.5, 10.5, 14],
+            'text-padding': 1.6,
+            'text-max-width': 12
           },
-          paint: commonPaint
+          paint: {
+            ...commonPaint,
+            'text-color': '#56616a',
+            'text-halo-width': 1.25
+          }
         });
 
         map.addLayer({
@@ -313,16 +339,16 @@
           type: 'symbol',
           source: 'municipalities',
           'source-layer': 'place',
-          minzoom: 6.35,
+          minzoom: 6.05,
           filter: [
             'all',
-            notCapital,
+            notNationalCapital,
             ['match', ['get', 'class'], ['city', 'town'], true, false],
-            ['<=', ['coalesce', ['get', 'rank'], 99], 13]
+            ['<=', ['coalesce', ['get', 'rank'], 99], 15]
           ],
           layout: {
             ...commonLayout,
-            'text-size': ['interpolate', ['linear'], ['zoom'], 6.35, 9.2, 8.5, 10.8, 11.5, 12]
+            'text-size': ['interpolate', ['linear'], ['zoom'], 6.05, 9.3, 8.5, 10.9, 11.5, 12.1]
           },
           paint: commonPaint
         });
@@ -335,7 +361,7 @@
           minzoom: 7.45,
           filter: [
             'all',
-            notCapital,
+            notNationalCapital,
             ['match', ['get', 'class'], ['town', 'village'], true, false],
             ['<=', ['coalesce', ['get', 'rank'], 99], 18]
           ],
@@ -359,7 +385,7 @@
           minzoom: 9.15,
           filter: [
             'all',
-            notCapital,
+            notNationalCapital,
             ['match', ['get', 'class'], ['village', 'hamlet'], true, false],
             ['<=', ['coalesce', ['get', 'rank'], 99], 24]
           ],
