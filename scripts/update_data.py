@@ -30,7 +30,7 @@ FIRES_PATH = DATA_DIR / "fires.geojson"
 BURNED_PATH = DATA_DIR / "burned.png"
 MANIFEST_PATH = DATA_DIR / "manifest.json"
 
-EUROPE_BBOX = (-25.0, 27.0, 45.0, 72.0)  # ouest, sud, est, nord
+EUROPE_BBOX = (-25.0, 34.0, 42.0, 72.0)  # ouest, sud, est, nord
 FIRMS_SOURCE = "VIIRS_NOAA20_NRT"
 EFFIS_LAYER = "modisviirsnrt"
 
@@ -136,8 +136,23 @@ def update_active_fires(session: requests.Session, manifest: dict[str, Any]) -> 
     oldest_allowed = now - timedelta(days=7, hours=3)
     seen: set[tuple[str, str, str, str]] = set()
     features: list[dict[str, Any]] = []
+    excluded_low_confidence = 0
+    excluded_non_vegetation = 0
 
     for row in older_rows + recent_rows:
+        confidence_raw = (row.get("confidence") or "").strip().lower()
+        if confidence_raw in {"l", "low"}:
+            excluded_low_confidence += 1
+            continue
+
+        # Le champ type n'est pas toujours présent dans les flux NRT. Lorsqu'il
+        # existe, 0 désigne un feu de végétation présumé; les volcans, sources
+        # statiques et détections en mer sont écartés.
+        hotspot_type = (row.get("type") or "").strip()
+        if hotspot_type and hotspot_type not in {"0", "0.0"}:
+            excluded_non_vegetation += 1
+            continue
+
         detected_at = parse_detection_datetime(row)
         if not detected_at or detected_at < oldest_allowed or detected_at > now + timedelta(hours=2):
             continue
@@ -166,6 +181,7 @@ def update_active_fires(session: requests.Session, manifest: dict[str, Any]) -> 
                 "age_h": round(age_hours, 1),
                 "recency": recency_class(age_hours),
                 "frp": frp,
+                "confidence": "high" if confidence_raw in {"h", "high"} else "nominal",
             },
         })
 
@@ -181,8 +197,14 @@ def update_active_fires(session: requests.Session, manifest: dict[str, Any]) -> 
         "period_start": (today - timedelta(days=6)).isoformat(),
         "period_end": today.isoformat(),
         "count": len(features),
+        "excluded_low_confidence": excluded_low_confidence,
+        "excluded_non_vegetation": excluded_non_vegetation,
+        "geographic_extent": list(EUROPE_BBOX),
     }
-    log(f"Feux actifs: {len(features)} détections enregistrées.")
+    log(
+        f"Feux actifs: {len(features)} détections enregistrées; "
+        f"{excluded_low_confidence} de faible confiance écartées."
+    )
     return True
 
 
@@ -221,9 +243,9 @@ def update_burned_areas(session: requests.Session, manifest: dict[str, Any]) -> 
     min_x, min_y = lon_to_mercator_x(west), lat_to_mercator_y(south)
     max_x, max_y = lon_to_mercator_x(east), lat_to_mercator_y(north)
 
-    width = 1800
+    width = 1400
     height = round(width * (max_y - min_y) / (max_x - min_x))
-    height = max(1200, min(height, 2400))
+    height = max(900, min(height, 1800))
 
     params = {
         "SERVICE": "WMS",
