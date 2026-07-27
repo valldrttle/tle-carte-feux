@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feux actifs et surfaces brûlées en Europe</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css">
+  <style>
+    :root {
+      --tle-blue: #010481;
+      --tle-text: #242424;
+      --tle-muted: #666;
+      --tle-border: #e5e5e5;
+      --recent-0: #b91c1c;
+      --recent-1: #ef4444;
+      --recent-2: #f97316;
+      --recent-3: #eab308;
+      --burned: #7f1d1d;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #fff; color: var(--tle-text); font-family: Arial, sans-serif; }
+    .tle-fire-card { width: 100%; max-width: 1040px; margin: 0 auto; background: #fff; border: 1px solid var(--tle-border); }
+    .tle-fire-head { padding: 16px 18px 14px; border-bottom: 2px solid var(--tle-blue); }
+    .tle-fire-title { margin: 0; color: var(--tle-blue); font-size: 22px; line-height: 1.2; }
+    .tle-fire-subtitle { margin: 5px 0 0; color: #555; font-size: 14px; line-height: 1.4; }
+    .tle-fire-map-wrap { position: relative; }
+    #tle-fire-map { width: 100%; height: 650px; background: #f3f3f3; }
+    .tle-fire-loading { position: absolute; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(255,255,255,.87); color: #555; font-size: 14px; text-align: center; }
+    .tle-fire-loading[hidden] { display: none; }
+    .tle-fire-legend { position: absolute; left: 12px; bottom: 28px; z-index: 4; max-width: 240px; padding: 10px 12px; background: rgba(255,255,255,.94); border: 1px solid rgba(0,0,0,.12); border-radius: 3px; font-size: 12px; line-height: 1.35; }
+    .tle-fire-legend strong { display: block; margin-bottom: 6px; color: var(--tle-blue); }
+    .tle-fire-row { display: flex; align-items: center; gap: 7px; margin: 4px 0; }
+    .tle-fire-dot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
+    .tle-fire-swatch { width: 17px; height: 11px; flex: 0 0 auto; background: rgba(127,29,29,.32); border: 1px solid rgba(127,29,29,.6); }
+    .tle-fire-rule { margin: 7px 0 6px; border: 0; border-top: 1px solid #ddd; }
+    .tle-fire-footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; min-height: 44px; padding: 8px 12px; color: var(--tle-muted); background: #fafafa; border-top: 1px solid var(--tle-border); font-size: 10.5px; line-height: 1.4; }
+    .tle-fire-logo { width: 76px; height: auto; opacity: .72; flex: 0 0 auto; }
+    .tle-fire-stale { color: #8a4b00; }
+    .maplibregl-ctrl-attrib { font-size: 9px !important; }
+    .maplibregl-ctrl-group { box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+    @media (max-width: 640px) {
+      .tle-fire-title { font-size: 19px; }
+      #tle-fire-map { height: 540px; }
+      .tle-fire-legend { left: 8px; bottom: 26px; max-width: 210px; padding: 9px 10px; }
+      .tle-fire-footer { align-items: flex-end; }
+      .tle-fire-logo { width: 65px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="tle-fire-card">
+    <header class="tle-fire-head">
+      <h1 class="tle-fire-title">Feux actifs et surfaces brûlées en Europe</h1>
+      <p class="tle-fire-subtitle" id="tle-fire-subtitle">Détections VIIRS sur sept jours et surfaces brûlées sur trente jours</p>
+    </header>
+
+    <div class="tle-fire-map-wrap">
+      <div id="tle-fire-map" role="img" aria-label="Carte des feux actifs et des surfaces brûlées en Europe"></div>
+      <div class="tle-fire-loading" id="tle-fire-loading">Chargement de la carte…</div>
+      <aside class="tle-fire-legend" aria-label="Légende de la carte">
+        <strong>Feux actifs - ancienneté</strong>
+        <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-0)"></span> Moins de 24 heures</div>
+        <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-1)"></span> De 1 à 3 jours</div>
+        <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-2)"></span> De 3 à 5 jours</div>
+        <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-3)"></span> De 5 à 7 jours</div>
+        <hr class="tle-fire-rule">
+        <div class="tle-fire-row"><span class="tle-fire-swatch"></span> Surfaces brûlées, 30 jours</div>
+      </aside>
+    </div>
+
+    <footer class="tle-fire-footer">
+      <span id="tle-fire-sources">Sources: NASA FIRMS, EFFIS / Copernicus, OpenStreetMap et OpenFreeMap.</span>
+      <img class="tle-fire-logo" src="https://upload.wikimedia.org/wikipedia/commons/6/66/Toute_l%27Europe_Logo.png" alt="Toute l'Europe">
+    </footer>
+  </main>
+
+  <script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+  <script>
+    (() => {
+      'use strict';
+
+      const DATA_ROOT = './data/';
+      const EUROPE_IMAGE_CORNERS = [
+        [-25, 72],
+        [45, 72],
+        [45, 27],
+        [-25, 27]
+      ];
+      const loading = document.getElementById('tle-fire-loading');
+      const subtitle = document.getElementById('tle-fire-subtitle');
+      const sources = document.getElementById('tle-fire-sources');
+
+      const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
+        day: 'numeric', month: 'long', year: 'numeric'
+      });
+
+      function formatDate(value) {
+        if (!value) return '';
+        const date = new Date(value + 'T12:00:00Z');
+        return dateFormatter.format(date);
+      }
+
+      function firstSymbolLayerId(map) {
+        const layers = map.getStyle().layers || [];
+        const layer = layers.find(item => item.type === 'symbol');
+        return layer ? layer.id : undefined;
+      }
+
+      function heatLayer(id, recency, color, beforeId) {
+        return {
+          id,
+          type: 'heatmap',
+          source: 'active-fires',
+          maxzoom: 6.8,
+          filter: ['==', ['get', 'recency'], recency],
+          paint: {
+            'heatmap-weight': 1,
+            'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 2.5, 0.7, 6.5, 1.3],
+            'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 2.5, 10, 6.5, 24],
+            'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 5.7, 0.86, 6.8, 0],
+            'heatmap-color': [
+              'interpolate', ['linear'], ['heatmap-density'],
+              0, 'rgba(0,0,0,0)',
+              0.18, color.replace('rgb', 'rgba').replace(')', ',0.18)'),
+              0.5, color.replace('rgb', 'rgba').replace(')', ',0.55)'),
+              1, color
+            ]
+          }
+        };
+      }
+
+      async function start() {
+        let manifest = { version: 1 };
+        try {
+          const response = await fetch(DATA_ROOT + 'manifest.json?ts=' + Date.now(), { cache: 'no-store' });
+          if (response.ok) manifest = await response.json();
+        } catch (error) {
+          console.warn('Manifest indisponible', error);
+        }
+
+        const version = encodeURIComponent(manifest.active_fires?.generated_at || Date.now());
+        const burnedVersion = encodeURIComponent(manifest.burned_areas?.generated_at || Date.now());
+
+        if (manifest.active_fires) {
+          subtitle.textContent =
+            'Feux actifs VIIRS du ' + formatDate(manifest.active_fires.period_start) +
+            ' au ' + formatDate(manifest.active_fires.period_end) +
+            ' ; surfaces brûlées sur les trente derniers jours';
+        }
+
+        const map = new maplibregl.Map({
+          container: 'tle-fire-map',
+          style: 'https://tiles.openfreemap.org/styles/positron',
+          center: [10, 51],
+          zoom: 3.55,
+          minZoom: 3,
+          maxZoom: 8,
+          maxBounds: [[-30, 25], [50, 74]],
+          attributionControl: true,
+          renderWorldCopies: false
+        });
+
+        map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+
+        map.on('load', () => {
+          const beforeId = firstSymbolLayerId(map);
+
+          if (manifest.burned_areas) {
+            map.addSource('burned-areas', {
+              type: 'image',
+              url: DATA_ROOT + 'burned.png?v=' + burnedVersion,
+              coordinates: EUROPE_IMAGE_CORNERS
+            });
+            map.addLayer({
+              id: 'burned-areas-layer',
+              type: 'raster',
+              source: 'burned-areas',
+              paint: {
+                'raster-opacity': 0.34,
+                'raster-fade-duration': 0
+              }
+            }, beforeId);
+          }
+
+          map.addSource('active-fires', {
+            type: 'geojson',
+            data: DATA_ROOT + 'fires.geojson?v=' + version,
+            maxzoom: 9,
+            tolerance: 0.45,
+            buffer: 32
+          });
+
+          const colors = ['rgb(185,28,28)', 'rgb(239,68,68)', 'rgb(249,115,22)', 'rgb(234,179,8)'];
+          // Les anciennes détections sont ajoutées en premier, les plus récentes au-dessus.
+          [3, 2, 1, 0].forEach(recency => {
+            map.addLayer(heatLayer('fires-heat-' + recency, recency, colors[recency]), beforeId);
+          });
+
+          map.addLayer({
+            id: 'fires-circles',
+            type: 'circle',
+            source: 'active-fires',
+            minzoom: 5.7,
+            paint: {
+              'circle-radius': ['interpolate', ['linear'], ['zoom'], 5.7, 2.1, 8, 4.3],
+              'circle-color': [
+                'match', ['get', 'recency'],
+                0, colors[0],
+                1, colors[1],
+                2, colors[2],
+                colors[3]
+              ],
+              'circle-opacity': ['interpolate', ['linear'], ['zoom'], 5.7, 0, 6.5, 0.9],
+              'circle-stroke-color': 'rgba(255,255,255,0.85)',
+              'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5.7, 0, 7, 0.55]
+            }
+          }, beforeId);
+
+          loading.hidden = true;
+        });
+
+        map.on('error', event => {
+          console.warn('Erreur cartographique', event.error || event);
+        });
+
+        const activeGenerated = manifest.active_fires?.generated_at ? new Date(manifest.active_fires.generated_at) : null;
+        const burnedGenerated = manifest.burned_areas?.generated_at ? new Date(manifest.burned_areas.generated_at) : null;
+        const now = new Date();
+        const activeStale = activeGenerated && now - activeGenerated > 9 * 3600 * 1000;
+        const burnedStale = burnedGenerated && now - burnedGenerated > 40 * 3600 * 1000;
+        if (activeStale || burnedStale || (manifest.last_run_errors || []).length) {
+          sources.classList.add('tle-fire-stale');
+          sources.textContent += ' Dernière mise à jour distante partiellement retardée; les derniers fichiers valides restent affichés.';
+        }
+      }
+
+      start().catch(error => {
+        console.error(error);
+        loading.textContent = 'La carte n’a pas pu être chargée.';
+      });
+    })();
+  </script>
+</body>
+</html>
