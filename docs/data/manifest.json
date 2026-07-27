@@ -1,5 +1,14 @@
 {
   "version": 1,
-  "last_run_at": null,
-  "last_run_errors": []
+  "last_run_at": "2026-07-27T11:15:34.324996Z",
+  "last_run_errors": [
+    "EFFIS: EFFIS n'a pas renvoyé un PNG valide: <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?>\n<!DOCTYPE ServiceExceptionReport SYSTEM \"http://schemas.opengis.net/wms/1.1.1/exception_1_1_1.dtd\">\n<ServiceExceptionReport version=\"1.1.1\">\n<ServiceException code=\"LayerNotDefined\">\nmsWMSLoadGetMapParams(): WMS server error. Invalid layer(s) g"
+  ],
+  "active_fires": {
+    "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
+    "generated_at": "2026-07-27T11:12:02.843377Z",
+    "period_start": "2026-07-21",
+    "period_end": "2026-07-27",
+    "count": 24331
+  }
 }
