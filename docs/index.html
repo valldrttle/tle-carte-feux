@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Feux actifs et surfaces brûlées en Europe</title>
-  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css">
+  <link id="maplibre-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css">
   <style>
     :root {
       --tle-blue: #010481;
@@ -15,7 +15,6 @@
       --recent-1: #ef4444;
       --recent-2: #f97316;
       --recent-3: #eab308;
-      --burned: #7f1d1d;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; background: #fff; color: var(--tle-text); font-family: Arial, sans-serif; }
@@ -24,14 +23,16 @@
     .tle-fire-title { margin: 0; color: var(--tle-blue); font-size: 22px; line-height: 1.2; }
     .tle-fire-subtitle { margin: 5px 0 0; color: #555; font-size: 14px; line-height: 1.4; }
     .tle-fire-map-wrap { position: relative; }
-    #tle-fire-map { width: 100%; height: 650px; background: #f3f3f3; }
-    .tle-fire-loading { position: absolute; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(255,255,255,.87); color: #555; font-size: 14px; text-align: center; }
-    .tle-fire-loading[hidden] { display: none; }
+    #tle-fire-map { width: 100%; height: 650px; background: #eef0f2; }
+    .tle-fire-status { position: absolute; left: 50%; top: 50%; z-index: 10; width: min(88%, 480px); transform: translate(-50%, -50%); padding: 13px 16px; background: rgba(255,255,255,.94); border: 1px solid #d5d5d5; color: #555; font-size: 14px; line-height: 1.45; text-align: center; }
+    .tle-fire-status[hidden] { display: none; }
+    .tle-fire-status[data-level="warning"] { color: #744900; border-color: #d9bb79; background: rgba(255,250,235,.96); }
+    .tle-fire-status[data-level="error"] { color: #8d1e1e; border-color: #d7a3a3; background: rgba(255,245,245,.97); }
     .tle-fire-legend { position: absolute; left: 12px; bottom: 28px; z-index: 4; max-width: 240px; padding: 10px 12px; background: rgba(255,255,255,.94); border: 1px solid rgba(0,0,0,.12); border-radius: 3px; font-size: 12px; line-height: 1.35; }
     .tle-fire-legend strong { display: block; margin-bottom: 6px; color: var(--tle-blue); }
     .tle-fire-row { display: flex; align-items: center; gap: 7px; margin: 4px 0; }
     .tle-fire-dot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
-    .tle-fire-swatch { width: 17px; height: 11px; flex: 0 0 auto; background: rgba(127,29,29,.32); border: 1px solid rgba(127,29,29,.6); }
+    .tle-fire-swatch { width: 17px; height: 11px; flex: 0 0 auto; background: rgba(127,29,29,.30); border: 1px solid rgba(127,29,29,.55); }
     .tle-fire-rule { margin: 7px 0 6px; border: 0; border-top: 1px solid #ddd; }
     .tle-fire-footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; min-height: 44px; padding: 8px 12px; color: var(--tle-muted); background: #fafafa; border-top: 1px solid var(--tle-border); font-size: 10.5px; line-height: 1.4; }
     .tle-fire-logo { width: 76px; height: auto; opacity: .72; flex: 0 0 auto; }
@@ -56,7 +57,7 @@
 
     <div class="tle-fire-map-wrap">
       <div id="tle-fire-map" role="img" aria-label="Carte des feux actifs et des surfaces brûlées en Europe"></div>
-      <div class="tle-fire-loading" id="tle-fire-loading">Chargement de la carte…</div>
+      <div class="tle-fire-status" id="tle-fire-status" role="status" aria-live="polite">Chargement du moteur cartographique…</div>
       <aside class="tle-fire-legend" aria-label="Légende de la carte">
         <strong>Feux actifs - ancienneté</strong>
         <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-0)"></span> Moins de 24 heures</div>
@@ -69,44 +70,81 @@
     </div>
 
     <footer class="tle-fire-footer">
-      <span id="tle-fire-sources">Sources: NASA FIRMS, EFFIS / Copernicus, OpenStreetMap et OpenFreeMap.</span>
+      <span id="tle-fire-sources">Sources: NASA FIRMS, EFFIS / Copernicus, OpenStreetMap et CARTO.</span>
       <img class="tle-fire-logo" src="https://upload.wikimedia.org/wikipedia/commons/6/66/Toute_l%27Europe_Logo.png" alt="Toute l'Europe">
     </footer>
   </main>
 
-  <script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
   <script>
     (() => {
       'use strict';
 
-      const DATA_ROOT = './data/';
-      const EUROPE_IMAGE_CORNERS = [
-        [-25, 72],
-        [45, 72],
-        [45, 27],
-        [-25, 27]
+      const MAPLIBRE_URLS = [
+        'https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js',
+        'https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js'
       ];
-      const loading = document.getElementById('tle-fire-loading');
+      const DATA_ROOT = './data/';
+      const EUROPE_IMAGE_CORNERS = [[-25, 72], [45, 72], [45, 27], [-25, 27]];
+      const statusBox = document.getElementById('tle-fire-status');
       const subtitle = document.getElementById('tle-fire-subtitle');
       const sources = document.getElementById('tle-fire-sources');
 
-      const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
-        day: 'numeric', month: 'long', year: 'numeric'
-      });
+      function showStatus(message, level = 'info') {
+        statusBox.textContent = message;
+        statusBox.dataset.level = level;
+        statusBox.hidden = false;
+      }
 
+      function hideStatus() {
+        statusBox.hidden = true;
+      }
+
+      function loadScript(url) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = url;
+          script.async = true;
+          script.onload = resolve;
+          script.onerror = () => reject(new Error('Échec du chargement de ' + url));
+          document.head.appendChild(script);
+        });
+      }
+
+      async function ensureMapLibre() {
+        if (window.maplibregl) return;
+        let lastError;
+        for (const url of MAPLIBRE_URLS) {
+          try {
+            await loadScript(url);
+            if (window.maplibregl) return;
+          } catch (error) {
+            lastError = error;
+          }
+        }
+        throw lastError || new Error('MapLibre est indisponible.');
+      }
+
+      async function fetchJson(url, options = {}) {
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), options.timeout || 15000);
+        try {
+          const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
+          if (!response.ok) throw new Error(url + ' a répondu ' + response.status);
+          return await response.json();
+        } finally {
+          window.clearTimeout(timeout);
+        }
+      }
+
+      const dateFormatter = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
       function formatDate(value) {
         if (!value) return '';
-        const date = new Date(value + 'T12:00:00Z');
-        return dateFormatter.format(date);
+        return dateFormatter.format(new Date(value + 'T12:00:00Z'));
       }
 
-      function firstSymbolLayerId(map) {
-        const layers = map.getStyle().layers || [];
-        const layer = layers.find(item => item.type === 'symbol');
-        return layer ? layer.id : undefined;
-      }
-
-      function heatLayer(id, recency, color, beforeId) {
+      function heatLayer(id, recency, color) {
+        const rgba18 = color.replace('rgb', 'rgba').replace(')', ',0.18)');
+        const rgba55 = color.replace('rgb', 'rgba').replace(')', ',0.55)');
         return {
           id,
           type: 'heatmap',
@@ -118,39 +156,57 @@
             'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 2.5, 0.7, 6.5, 1.3],
             'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 2.5, 10, 6.5, 24],
             'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 5.7, 0.86, 6.8, 0],
-            'heatmap-color': [
-              'interpolate', ['linear'], ['heatmap-density'],
-              0, 'rgba(0,0,0,0)',
-              0.18, color.replace('rgb', 'rgba').replace(')', ',0.18)'),
-              0.5, color.replace('rgb', 'rgba').replace(')', ',0.55)'),
-              1, color
-            ]
+            'heatmap-color': ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0,0,0,0)', 0.18, rgba18, 0.5, rgba55, 1, color]
           }
         };
       }
 
+      function baseStyle() {
+        return {
+          version: 8,
+          sources: {
+            'carto-base': {
+              type: 'raster',
+              tiles: ['https://a.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', 'https://b.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', 'https://c.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'],
+              tileSize: 256,
+              attribution: '© OpenStreetMap contributors © CARTO'
+            },
+            'carto-labels': {
+              type: 'raster',
+              tiles: ['https://a.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', 'https://b.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', 'https://c.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'],
+              tileSize: 256
+            }
+          },
+          layers: [{ id: 'carto-base-layer', type: 'raster', source: 'carto-base' }]
+        };
+      }
+
       async function start() {
-        let manifest = { version: 1 };
+        showStatus('Chargement du moteur cartographique…');
+        await ensureMapLibre();
+
+        let manifest = { version: 1, last_run_errors: [] };
         try {
-          const response = await fetch(DATA_ROOT + 'manifest.json?ts=' + Date.now(), { cache: 'no-store' });
-          if (response.ok) manifest = await response.json();
+          manifest = await fetchJson(DATA_ROOT + 'manifest.json?ts=' + Date.now(), { timeout: 10000 });
         } catch (error) {
           console.warn('Manifest indisponible', error);
         }
 
-        const version = encodeURIComponent(manifest.active_fires?.generated_at || Date.now());
-        const burnedVersion = encodeURIComponent(manifest.burned_areas?.generated_at || Date.now());
-
-        if (manifest.active_fires) {
-          subtitle.textContent =
-            'Feux actifs VIIRS du ' + formatDate(manifest.active_fires.period_start) +
-            ' au ' + formatDate(manifest.active_fires.period_end) +
-            ' ; surfaces brûlées sur les trente derniers jours';
+        let fires = { type: 'FeatureCollection', features: [] };
+        try {
+          fires = await fetchJson(DATA_ROOT + 'fires.geojson?ts=' + Date.now(), { timeout: 15000 });
+        } catch (error) {
+          console.warn('Données FIRMS indisponibles', error);
         }
 
+        if (manifest.active_fires) {
+          subtitle.textContent = 'Feux actifs VIIRS du ' + formatDate(manifest.active_fires.period_start) + ' au ' + formatDate(manifest.active_fires.period_end) + ' ; surfaces brûlées sur les trente derniers jours';
+        }
+
+        showStatus('Chargement du fond de carte…');
         const map = new maplibregl.Map({
           container: 'tle-fire-map',
-          style: 'https://tiles.openfreemap.org/styles/positron',
+          style: baseStyle(),
           center: [10, 51],
           zoom: 3.55,
           minZoom: 3,
@@ -162,66 +218,66 @@
 
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
 
-        map.on('load', () => {
-          const beforeId = firstSymbolLayerId(map);
-
-          if (manifest.burned_areas) {
-            map.addSource('burned-areas', {
-              type: 'image',
-              url: DATA_ROOT + 'burned.png?v=' + burnedVersion,
-              coordinates: EUROPE_IMAGE_CORNERS
-            });
-            map.addLayer({
-              id: 'burned-areas-layer',
-              type: 'raster',
-              source: 'burned-areas',
-              paint: {
-                'raster-opacity': 0.34,
-                'raster-fade-duration': 0
-              }
-            }, beforeId);
-          }
-
-          map.addSource('active-fires', {
-            type: 'geojson',
-            data: DATA_ROOT + 'fires.geojson?v=' + version,
-            maxzoom: 9,
-            tolerance: 0.45,
-            buffer: 32
-          });
-
-          const colors = ['rgb(185,28,28)', 'rgb(239,68,68)', 'rgb(249,115,22)', 'rgb(234,179,8)'];
-          // Les anciennes détections sont ajoutées en premier, les plus récentes au-dessus.
-          [3, 2, 1, 0].forEach(recency => {
-            map.addLayer(heatLayer('fires-heat-' + recency, recency, colors[recency]), beforeId);
-          });
-
-          map.addLayer({
-            id: 'fires-circles',
-            type: 'circle',
-            source: 'active-fires',
-            minzoom: 5.7,
-            paint: {
-              'circle-radius': ['interpolate', ['linear'], ['zoom'], 5.7, 2.1, 8, 4.3],
-              'circle-color': [
-                'match', ['get', 'recency'],
-                0, colors[0],
-                1, colors[1],
-                2, colors[2],
-                colors[3]
-              ],
-              'circle-opacity': ['interpolate', ['linear'], ['zoom'], 5.7, 0, 6.5, 0.9],
-              'circle-stroke-color': 'rgba(255,255,255,0.85)',
-              'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5.7, 0, 7, 0.55]
-            }
-          }, beforeId);
-
-          loading.hidden = true;
-        });
-
+        let fatalMapError = false;
         map.on('error', event => {
+          const message = event && event.error ? event.error.message : 'Erreur cartographique inconnue';
           console.warn('Erreur cartographique', event.error || event);
+          if (!map.loaded()) {
+            fatalMapError = true;
+            showStatus('Le fond de carte n’a pas pu être chargé: ' + message, 'error');
+          }
         });
+
+        map.on('load', () => {
+          try {
+            if (manifest.burned_areas) {
+              map.addSource('burned-areas', {
+                type: 'image',
+                url: DATA_ROOT + 'burned.png?v=' + encodeURIComponent(manifest.burned_areas.generated_at || Date.now()),
+                coordinates: EUROPE_IMAGE_CORNERS
+              });
+              map.addLayer({
+                id: 'burned-areas-layer',
+                type: 'raster',
+                source: 'burned-areas',
+                paint: { 'raster-opacity': 0.30, 'raster-fade-duration': 0 }
+              });
+            }
+
+            map.addSource('active-fires', { type: 'geojson', data: fires, maxzoom: 9, tolerance: 0.45, buffer: 32 });
+            const colors = ['rgb(185,28,28)', 'rgb(239,68,68)', 'rgb(249,115,22)', 'rgb(234,179,8)'];
+            [3, 2, 1, 0].forEach(recency => map.addLayer(heatLayer('fires-heat-' + recency, recency, colors[recency])));
+            map.addLayer({
+              id: 'fires-circles',
+              type: 'circle',
+              source: 'active-fires',
+              minzoom: 5.7,
+              paint: {
+                'circle-radius': ['interpolate', ['linear'], ['zoom'], 5.7, 2.1, 8, 4.3],
+                'circle-color': ['match', ['get', 'recency'], 0, colors[0], 1, colors[1], 2, colors[2], colors[3]],
+                'circle-opacity': ['interpolate', ['linear'], ['zoom'], 5.7, 0, 6.5, 0.9],
+                'circle-stroke-color': 'rgba(255,255,255,0.85)',
+                'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5.7, 0, 7, 0.55]
+              }
+            });
+
+            map.addLayer({ id: 'carto-labels-layer', type: 'raster', source: 'carto-labels', paint: { 'raster-opacity': 1 } });
+
+            const count = Array.isArray(fires.features) ? fires.features.length : 0;
+            if (count === 0) {
+              showStatus('Le fond de carte fonctionne, mais aucune détection VIIRS n’a été chargée. Vérifiez l’exécution GitHub Actions et le secret FIRMS_MAP_KEY.', 'warning');
+            } else {
+              hideStatus();
+            }
+          } catch (error) {
+            console.error('Erreur lors de l’ajout des couches', error);
+            showStatus('Le fond est chargé, mais une couche n’a pas pu être ajoutée: ' + error.message, 'error');
+          }
+        });
+
+        window.setTimeout(() => {
+          if (!map.loaded() && !fatalMapError) showStatus('Le chargement du fond de carte prend anormalement longtemps. Vérifiez les requêtes vers jsDelivr et CARTO.', 'warning');
+        }, 15000);
 
         const activeGenerated = manifest.active_fires?.generated_at ? new Date(manifest.active_fires.generated_at) : null;
         const burnedGenerated = manifest.burned_areas?.generated_at ? new Date(manifest.burned_areas.generated_at) : null;
@@ -236,7 +292,7 @@
 
       start().catch(error => {
         console.error(error);
-        loading.textContent = 'La carte n’a pas pu être chargée.';
+        showStatus('La carte n’a pas pu démarrer: ' + error.message, 'error');
       });
     })();
   </script>
