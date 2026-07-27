@@ -1,8 +1,8 @@
 {
-  "version": 1,
-  "last_run_at": "2026-07-27T12:33:45.863558Z",
+  "version": 2,
+  "last_run_at": "2026-07-27T13:03:33.000110Z",
   "last_run_errors": [
-    "EFFIS: EFFIS n'a pas renvoyé un PNG valide: <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?>\n<!DOCTYPE ServiceExceptionReport SYSTEM \"http://schemas.opengis.net/wms/1.1.1/exception_1_1_1.dtd\">\n<ServiceExceptionReport version=\"1.1.1\">\n<ServiceException code=\"LayerNotDefined\">\nmsWMSLoadGetMapParams(): WMS server error. Invalid layer(s) g"
+    "NASA FIRMS: HTTPSConnectionPool(host='firms.modaps.eosdis.nasa.gov', port=443): Max retries exceeded with url: /api/area/csv/7413b98a02c44501030c20aa957f52d7/VIIRS_NOAA20_NRT/-25.0,34.0,42.0,72.0/5 (Caused by NewConnectionError(\"HTTPSConnection(host='firms.modaps.eosdis.nasa.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))"
   ],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
@@ -18,5 +18,32 @@
       42.0,
       72.0
     ]
+  },
+  "burned_areas": {
+    "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
+    "transport": "WFS SHAPEZIP",
+    "layer": "ms:modis.ba.poly",
+    "generated_at": "2026-07-27T12:59:38.977298Z",
+    "period_start": "2026-06-27",
+    "period_end": "2026-07-27",
+    "count": 2252,
+    "total_area_ha": 632737.0,
+    "geographic_extent": [
+      -25.0,
+      34.0,
+      42.0,
+      72.0
+    ],
+    "archive_bytes": 230200821,
+    "geojson_bytes": 1870460,
+    "filter": "aucun (filtrage local)",
+    "processing": {
+      "count": 2252,
+      "total_area_ha": 632737.0,
+      "records_read": 102075,
+      "rejected_outside_period": 99710,
+      "rejected_outside_extent": 113,
+      "rejected_invalid_geometry": 0
+    }
   }
 }
