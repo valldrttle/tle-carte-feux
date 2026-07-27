@@ -33,6 +33,7 @@
     .tle-fire-row { display: inline-flex; align-items: center; gap: 6px; margin: 0; white-space: nowrap; }
     .tle-fire-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
     .tle-fire-swatch { width: 18px; height: 11px; flex: 0 0 auto; background: rgba(78,72,65,.38); border: 1px solid rgba(52,48,44,.82); }
+    .tle-fire-legend-detail { color: #666; font-size: 11px; }
     .tle-fire-density { width: 108px; height: 10px; flex: 0 0 auto; border-radius: 6px; background: linear-gradient(90deg, rgba(251,191,36,.18), #fbbf24 38%, #f97316 68%, #b91c1c); }
     .tle-fire-mode { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 7px 11px; }
     .tle-fire-mode[hidden] { display: none; }
@@ -76,7 +77,7 @@
           <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-3)"></span> De 5 à 7 jours</div>
         </div>
         <span class="tle-fire-divider" aria-hidden="true"></span>
-        <div class="tle-fire-row"><span class="tle-fire-swatch"></span> Surfaces brûlées</div>
+        <div class="tle-fire-row"><span class="tle-fire-swatch"></span> Surfaces brûlées <span class="tle-fire-legend-detail">(visible en zoomant)</span></div>
       </aside>
     </header>
 
@@ -100,6 +101,7 @@
         'https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js'
       ];
       const DATA_ROOT = './data/';
+      const OPENFREEMAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
       const FRENCH_LABELS = {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[36.0,58.0]},"properties":{"kind":"country","name":"Russie","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[12.2208,64.6365]},"properties":{"kind":"country","name":"Norvège","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[2.0992,46.8951]},"properties":{"kind":"country","name":"France","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.7862,62.2749]},"properties":{"kind":"country","name":"Suède","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[27.7864,53.706]},"properties":{"kind":"country","name":"Biélorussie","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[30.9808,48.8046]},"properties":{"kind":"country","name":"Ukraine","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[19.0763,51.8844]},"properties":{"kind":"country","name":"Pologne","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.9531,47.9192]},"properties":{"kind":"country","name":"Autriche","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[19.1032,47.2452]},"properties":{"kind":"country","name":"Hongrie","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[28.649,47.1376]},"properties":{"kind":"country","name":"Moldavie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[24.2117,46.036]},"properties":{"kind":"country","name":"Roumanie","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[24.1278,55.0912]},"properties":{"kind":"country","name":"Lituanie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[24.5044,56.8951]},"properties":{"kind":"country","name":"Lettonie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[25.5617,58.4981]},"properties":{"kind":"country","name":"Estonie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[10.4324,51.4312]},"properties":{"kind":"country","name":"Allemagne","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[25.1385,42.7394]},"properties":{"kind":"country","name":"Bulgarie","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[21.8063,39.0805]},"properties":{"kind":"country","name":"Grèce","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[34.2807,38.5969]},"properties":{"kind":"country","name":"Turquie","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[19.9676,41.2479]},"properties":{"kind":"country","name":"Albanie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[15.5836,44.5448]},"properties":{"kind":"country","name":"Croatie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[8.2865,46.8097]},"properties":{"kind":"country","name":"Suisse","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[5.9644,49.7159]},"properties":{"kind":"country","name":"Luxembourg","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[4.7374,50.5797]},"properties":{"kind":"country","name":"Belgique","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[5.3981,52.0402]},"properties":{"kind":"country","name":"Pays-Bas","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-8.3679,39.5108]},"properties":{"kind":"country","name":"Portugal","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-3.52,39.9179]},"properties":{"kind":"country","name":"Espagne","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-7.8067,53.5104]},"properties":{"kind":"country","name":"Irlande","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[12.6312,42.5582]},"properties":{"kind":"country","name":"Italie","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[9.4608,56.3243]},"properties":{"kind":"country","name":"Danemark","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-1.7533,54.2247]},"properties":{"kind":"country","name":"Royaume-Uni","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-18.4579,64.988]},"properties":{"kind":"country","name":"Islande","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.7323,46.1274]},"properties":{"kind":"country","name":"Slovénie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[27.3733,65.03]},"properties":{"kind":"country","name":"Finlande","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[19.6301,48.7119]},"properties":{"kind":"country","name":"Slovaquie","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[15.5382,49.7583]},"properties":{"kind":"country","name":"Tchéquie","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[33.033,34.8399]},"properties":{"kind":"country","name":"Chypre","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[18.1152,43.8531]},"properties":{"kind":"country","name":"Bosnie-Herzégovine","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[21.7204,41.6811]},"properties":{"kind":"country","name":"Macédoine du Nord","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[21.0135,44.1367]},"properties":{"kind":"country","name":"Serbie","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[19.3962,42.7505]},"properties":{"kind":"country","name":"Monténégro","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[20.9,42.6]},"properties":{"kind":"country","name":"Kosovo","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[1.58,42.55]},"properties":{"kind":"country","name":"Andorre","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.38,35.9]},"properties":{"kind":"country","name":"Malte","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[19.8188,41.3269]},"properties":{"kind":"capital","name":"Tirana","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[16.3725,48.2084]},"properties":{"kind":"capital","name":"Vienne","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[4.3517,50.8466]},"properties":{"kind":"capital","name":"Bruxelles","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[23.3219,42.6977]},"properties":{"kind":"capital","name":"Sofia","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[18.3867,43.852]},"properties":{"kind":"capital","name":"Sarajevo","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[27.5619,53.9023]},"properties":{"kind":"capital","name":"Minsk","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[7.4515,46.9483]},"properties":{"kind":"capital","name":"Berne","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.4213,50.0875]},"properties":{"kind":"capital","name":"Prague","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.3889,52.517]},"properties":{"kind":"capital","name":"Berlin","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[12.5701,55.6867]},"properties":{"kind":"capital","name":"Copenhague","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-3.7036,40.4167]},"properties":{"kind":"capital","name":"Madrid","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[24.7454,59.4372]},"properties":{"kind":"capital","name":"Tallinn","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[24.9426,60.1674]},"properties":{"kind":"capital","name":"Helsinki","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[2.3515,48.8567]},"properties":{"kind":"capital","name":"Paris","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-0.1276,51.5073]},"properties":{"kind":"capital","name":"Londres","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[23.7283,37.9839]},"properties":{"kind":"capital","name":"Athènes","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[15.977,45.8132]},"properties":{"kind":"capital","name":"Zagreb","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-6.2603,53.3498]},"properties":{"kind":"capital","name":"Dublin","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[12.4829,41.8933]},"properties":{"kind":"capital","name":"Rome","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[25.2829,54.687]},"properties":{"kind":"capital","name":"Vilnius","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[6.1297,49.8159]},"properties":{"kind":"capital","name":"Luxembourg","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[24.1052,56.9494]},"properties":{"kind":"capital","name":"Riga","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[28.8323,47.0245]},"properties":{"kind":"capital","name":"Chișinău","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[21.4317,41.9961]},"properties":{"kind":"capital","name":"Skopje","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.5141,35.8992]},"properties":{"kind":"capital","name":"La Valette","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[4.8936,52.3728]},"properties":{"kind":"capital","name":"Amsterdam","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[10.739,59.9133]},"properties":{"kind":"capital","name":"Oslo","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[21.0714,52.2337]},"properties":{"kind":"capital","name":"Varsovie","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-9.1366,38.7078]},"properties":{"kind":"capital","name":"Lisbonne","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[26.1027,44.4361]},"properties":{"kind":"capital","name":"Bucarest","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[37.6175,55.7504]},"properties":{"kind":"capital","name":"Moscou","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[20.4569,44.8178]},"properties":{"kind":"capital","name":"Belgrade","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[17.1093,48.1517]},"properties":{"kind":"capital","name":"Bratislava","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.5069,46.05]},"properties":{"kind":"capital","name":"Ljubljana","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[18.0711,59.3251]},"properties":{"kind":"capital","name":"Stockholm","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[32.8541,39.9208]},"properties":{"kind":"capital","name":"Ankara","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[30.5241,50.45]},"properties":{"kind":"capital","name":"Kyiv","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[21.1655,42.6629]},"properties":{"kind":"capital","name":"Pristina","rank":2}}]};
       const statusBox = document.getElementById('tle-fire-status');
       const subtitle = document.getElementById('tle-fire-subtitle');
@@ -176,6 +178,7 @@
       function baseStyle() {
         return {
           version: 8,
+          glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
           sources: {
             'carto-base': {
               type: 'raster',
@@ -196,7 +199,7 @@
         map.addSource('french-labels', { type: 'geojson', data: FRENCH_LABELS });
         const commonCountryLayout = {
           'text-field': ['get', 'name'],
-          'text-font': ['Arial'],
+          'text-font': ['Noto Sans Regular'],
           'text-letter-spacing': 0.06,
           'text-max-width': 8,
           'text-allow-overlap': false,
@@ -212,38 +215,165 @@
         map.addLayer({
           id: 'labels-countries-major', type: 'symbol', source: 'french-labels',
           filter: ['all', ['==', ['get', 'kind'], 'country'], ['==', ['get', 'rank'], 1]],
-          minzoom: 2.5,
+          minzoom: 2.5, maxzoom: 5.8,
           layout: { ...commonCountryLayout, 'text-size': ['interpolate', ['linear'], ['zoom'], 3, 10.5, 6, 13], 'text-transform': 'uppercase' },
           paint: commonCountryPaint
         });
         map.addLayer({
           id: 'labels-countries-medium', type: 'symbol', source: 'french-labels',
           filter: ['all', ['==', ['get', 'kind'], 'country'], ['==', ['get', 'rank'], 2]],
-          minzoom: 3.45,
+          minzoom: 3.45, maxzoom: 6.15,
           layout: { ...commonCountryLayout, 'text-size': ['interpolate', ['linear'], ['zoom'], 3.5, 9.5, 6, 12], 'text-transform': 'uppercase' },
           paint: commonCountryPaint
         });
         map.addLayer({
           id: 'labels-countries-small', type: 'symbol', source: 'french-labels',
           filter: ['all', ['==', ['get', 'kind'], 'country'], ['==', ['get', 'rank'], 3]],
-          minzoom: 5.15,
+          minzoom: 5.15, maxzoom: 6.7,
           layout: { ...commonCountryLayout, 'text-size': 10, 'text-transform': 'uppercase' },
           paint: commonCountryPaint
         });
         map.addLayer({
-          id: 'capital-dots', type: 'circle', source: 'french-labels', minzoom: 4.7,
+          id: 'capital-dots', type: 'circle', source: 'french-labels', minzoom: 4.7, maxzoom: 7.7,
           filter: ['==', ['get', 'kind'], 'capital'],
           paint: { 'circle-radius': 1.8, 'circle-color': '#59636b', 'circle-stroke-color': 'rgba(255,255,255,.9)', 'circle-stroke-width': 0.8 }
         });
         map.addLayer({
-          id: 'capital-labels', type: 'symbol', source: 'french-labels', minzoom: 4.7,
+          id: 'capital-labels', type: 'symbol', source: 'french-labels', minzoom: 4.7, maxzoom: 7.7,
           filter: ['==', ['get', 'kind'], 'capital'],
           layout: {
-            'text-field': ['get', 'name'], 'text-font': ['Arial'],
+            'text-field': ['get', 'name'], 'text-font': ['Noto Sans Regular'],
             'text-size': ['interpolate', ['linear'], ['zoom'], 4.7, 9.5, 7, 11.5],
             'text-offset': [0, 0.85], 'text-anchor': 'top', 'text-allow-overlap': false
           },
           paint: { 'text-color': '#4f5961', 'text-halo-color': 'rgba(255,255,255,.95)', 'text-halo-width': 1.2 }
+        });
+      }
+
+      function resolveStyleResource(value) {
+        if (!value || typeof value !== 'string') return value;
+        return new URL(value, OPENFREEMAP_STYLE_URL).href;
+      }
+
+      async function fetchMunicipalitySource() {
+        const style = await fetchJson(OPENFREEMAP_STYLE_URL, { timeout: 15000 });
+        const placeLayer = (style.layers || []).find(layer => layer.source && layer['source-layer'] === 'place');
+        if (!placeLayer || !style.sources || !style.sources[placeLayer.source]) {
+          throw new Error('La source des communes est absente du style OpenFreeMap.');
+        }
+
+        const source = JSON.parse(JSON.stringify(style.sources[placeLayer.source]));
+        if (source.url) source.url = resolveStyleResource(source.url);
+        if (Array.isArray(source.tiles)) source.tiles = source.tiles.map(resolveStyleResource);
+        return source;
+      }
+
+      function addFrenchMunicipalityLabels(map, sourceDefinition) {
+        if (!sourceDefinition || map.getSource('municipalities')) return;
+        map.addSource('municipalities', sourceDefinition);
+
+        const frenchName = ['coalesce', ['get', 'name:fr'], ['get', 'name_fr'], ['get', 'name']];
+        const notCapital = ['!', ['has', 'capital']];
+        const commonLayout = {
+          'text-field': frenchName,
+          'text-font': ['Noto Sans Regular'],
+          'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
+          'text-radial-offset': 0.35,
+          'text-justify': 'auto',
+          'text-max-width': 9,
+          'text-padding': 2.5,
+          'text-allow-overlap': false,
+          'text-ignore-placement': false,
+          'text-optional': true,
+          'symbol-sort-key': ['coalesce', ['get', 'rank'], 99]
+        };
+        const commonPaint = {
+          'text-color': '#68727a',
+          'text-halo-color': 'rgba(255,255,255,.96)',
+          'text-halo-width': 1.15,
+          'text-halo-blur': 0.25
+        };
+
+        map.addLayer({
+          id: 'municipalities-major',
+          type: 'symbol',
+          source: 'municipalities',
+          'source-layer': 'place',
+          minzoom: 5.35,
+          filter: ['all', notCapital, ['==', ['get', 'class'], 'city'], ['<=', ['coalesce', ['get', 'rank'], 99], 7]],
+          layout: {
+            ...commonLayout,
+            'text-size': ['interpolate', ['linear'], ['zoom'], 5.35, 10, 7.5, 12.2, 10.5, 13.5]
+          },
+          paint: commonPaint
+        });
+
+        map.addLayer({
+          id: 'municipalities-secondary',
+          type: 'symbol',
+          source: 'municipalities',
+          'source-layer': 'place',
+          minzoom: 6.35,
+          filter: [
+            'all',
+            notCapital,
+            ['match', ['get', 'class'], ['city', 'town'], true, false],
+            ['<=', ['coalesce', ['get', 'rank'], 99], 13]
+          ],
+          layout: {
+            ...commonLayout,
+            'text-size': ['interpolate', ['linear'], ['zoom'], 6.35, 9.2, 8.5, 10.8, 11.5, 12]
+          },
+          paint: commonPaint
+        });
+
+        map.addLayer({
+          id: 'municipalities-local',
+          type: 'symbol',
+          source: 'municipalities',
+          'source-layer': 'place',
+          minzoom: 7.45,
+          filter: [
+            'all',
+            notCapital,
+            ['match', ['get', 'class'], ['town', 'village'], true, false],
+            ['<=', ['coalesce', ['get', 'rank'], 99], 18]
+          ],
+          layout: {
+            ...commonLayout,
+            'text-size': ['interpolate', ['linear'], ['zoom'], 7.45, 8.7, 9.5, 10.1, 11.5, 10.8],
+            'text-padding': 3.5
+          },
+          paint: {
+            ...commonPaint,
+            'text-color': '#707980',
+            'text-halo-width': 1.05
+          }
+        });
+
+        map.addLayer({
+          id: 'municipalities-small',
+          type: 'symbol',
+          source: 'municipalities',
+          'source-layer': 'place',
+          minzoom: 9.15,
+          filter: [
+            'all',
+            notCapital,
+            ['match', ['get', 'class'], ['village', 'hamlet'], true, false],
+            ['<=', ['coalesce', ['get', 'rank'], 99], 24]
+          ],
+          layout: {
+            ...commonLayout,
+            'text-size': ['interpolate', ['linear'], ['zoom'], 9.15, 8.5, 11.5, 9.8],
+            'text-padding': 4,
+            'text-radial-offset': 0.25
+          },
+          paint: {
+            ...commonPaint,
+            'text-color': '#7a8288',
+            'text-halo-width': 1
+          }
         });
       }
 
@@ -282,6 +412,11 @@
           console.warn('Périmètres EFFIS indisponibles', error);
         }
 
+        const municipalitySourcePromise = fetchMunicipalitySource().catch(error => {
+          console.warn('Étiquettes communales indisponibles', error);
+          return null;
+        });
+
         if (manifest.active_fires && manifest.burned_areas) {
           subtitle.textContent = 'Incendies recensés en Europe entre le ' + formatDate(manifest.active_fires.period_start) + ' et le ' + formatDate(manifest.active_fires.period_end) + ' et surfaces brûlées entre le ' + formatDate(manifest.burned_areas.period_start) + ' et le ' + formatDate(manifest.burned_areas.period_end);
         } else if (manifest.active_fires) {
@@ -298,7 +433,7 @@
           center: [9, 52.5],
           zoom: 3.55,
           minZoom: 3,
-          maxZoom: 8.5,
+          maxZoom: 11.5,
           maxBounds: [[-28, 32], [45, 74]],
           attributionControl: true,
           renderWorldCopies: false
@@ -324,7 +459,7 @@
             map.addSource('burned-areas', {
               type: 'geojson',
               data: burned,
-              maxzoom: 10,
+              maxzoom: 11,
               tolerance: 0.22,
               buffer: 8
             });
@@ -348,7 +483,7 @@
               }
             });
 
-            map.addSource('active-fires', { type: 'geojson', data: fires, maxzoom: 9, tolerance: 0.55, buffer: 24 });
+            map.addSource('active-fires', { type: 'geojson', data: fires, maxzoom: 11, tolerance: 0.45, buffer: 24 });
             map.addLayer({
               id: 'fires-heat-48h', type: 'heatmap', source: 'active-fires', maxzoom: 6.35,
               filter: ['<=', ['get', 'age_h'], 48],
@@ -380,6 +515,14 @@
               }
             });
 
+            municipalitySourcePromise.then(sourceDefinition => {
+              if (!sourceDefinition) return;
+              try {
+                addFrenchMunicipalityLabels(map, sourceDefinition);
+              } catch (error) {
+                console.warn('Impossible d’ajouter les noms de communes', error);
+              }
+            });
             addFrenchLabels(map);
             updateLegend(map);
             map.on('zoom', () => updateLegend(map));
