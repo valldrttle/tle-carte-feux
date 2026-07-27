@@ -305,6 +305,9 @@
           'text-halo-blur': 0.25
         };
 
+        // Les filtres des quatre couches sont volontairement exclusifs :
+        // une même localité ne peut être dessinée que dans une seule couche.
+
         map.addLayer({
           id: 'municipalities-major',
           type: 'symbol',
@@ -343,8 +346,21 @@
           filter: [
             'all',
             notNationalCapital,
-            ['match', ['get', 'class'], ['city', 'town'], true, false],
-            ['<=', ['coalesce', ['get', 'rank'], 99], 15]
+            [
+              'any',
+              [
+                'all',
+                ['==', ['get', 'class'], 'city'],
+                ['!', ['has', 'capital']],
+                ['>', ['coalesce', ['get', 'rank'], 99], 10],
+                ['<=', ['coalesce', ['get', 'rank'], 99], 15]
+              ],
+              [
+                'all',
+                ['==', ['get', 'class'], 'town'],
+                ['<=', ['coalesce', ['get', 'rank'], 99], 15]
+              ]
+            ]
           ],
           layout: {
             ...commonLayout,
@@ -362,8 +378,20 @@
           filter: [
             'all',
             notNationalCapital,
-            ['match', ['get', 'class'], ['town', 'village'], true, false],
-            ['<=', ['coalesce', ['get', 'rank'], 99], 18]
+            [
+              'any',
+              [
+                'all',
+                ['==', ['get', 'class'], 'town'],
+                ['>', ['coalesce', ['get', 'rank'], 99], 15],
+                ['<=', ['coalesce', ['get', 'rank'], 99], 18]
+              ],
+              [
+                'all',
+                ['==', ['get', 'class'], 'village'],
+                ['<=', ['coalesce', ['get', 'rank'], 99], 18]
+              ]
+            ]
           ],
           layout: {
             ...commonLayout,
@@ -386,8 +414,20 @@
           filter: [
             'all',
             notNationalCapital,
-            ['match', ['get', 'class'], ['village', 'hamlet'], true, false],
-            ['<=', ['coalesce', ['get', 'rank'], 99], 24]
+            [
+              'any',
+              [
+                'all',
+                ['==', ['get', 'class'], 'village'],
+                ['>', ['coalesce', ['get', 'rank'], 99], 18],
+                ['<=', ['coalesce', ['get', 'rank'], 99], 24]
+              ],
+              [
+                'all',
+                ['==', ['get', 'class'], 'hamlet'],
+                ['<=', ['coalesce', ['get', 'rank'], 99], 24]
+              ]
+            ]
           ],
           layout: {
             ...commonLayout,
