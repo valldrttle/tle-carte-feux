@@ -28,16 +28,17 @@
     .tle-fire-status[hidden] { display: none; }
     .tle-fire-status[data-level="warning"] { color: #744900; border-color: #d9bb79; background: rgba(255,250,235,.96); }
     .tle-fire-status[data-level="error"] { color: #8d1e1e; border-color: #d7a3a3; background: rgba(255,245,245,.97); }
-    .tle-fire-legend { position: absolute; left: 12px; bottom: 28px; z-index: 4; width: 245px; padding: 10px 12px; background: rgba(255,255,255,.94); border: 1px solid rgba(0,0,0,.12); border-radius: 3px; font-size: 12px; line-height: 1.35; }
-    .tle-fire-legend strong { display: block; margin-bottom: 6px; color: var(--tle-blue); }
-    .tle-fire-row { display: flex; align-items: center; gap: 7px; margin: 4px 0; }
-    .tle-fire-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+    .tle-fire-legend { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 13px; margin-top: 11px; padding-top: 10px; border-top: 1px solid #e3e3e3; font-size: 12px; line-height: 1.3; }
+    .tle-fire-legend strong { color: var(--tle-blue); white-space: nowrap; }
+    .tle-fire-row { display: inline-flex; align-items: center; gap: 6px; margin: 0; white-space: nowrap; }
+    .tle-fire-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
     .tle-fire-swatch { width: 18px; height: 11px; flex: 0 0 auto; background: rgba(78,72,65,.38); border: 1px solid rgba(52,48,44,.82); }
-    .tle-fire-rule { margin: 7px 0 6px; border: 0; border-top: 1px solid #ddd; }
-    .tle-fire-density { height: 10px; margin: 5px 0 3px; border-radius: 6px; background: linear-gradient(90deg, rgba(251,191,36,.18), #fbbf24 38%, #f97316 68%, #b91c1c); }
-    .tle-fire-scale { display: flex; justify-content: space-between; color: #666; font-size: 10px; }
-    .tle-fire-mode-note { margin: 0 0 7px; color: #555; }
+    .tle-fire-density { width: 108px; height: 10px; flex: 0 0 auto; border-radius: 6px; background: linear-gradient(90deg, rgba(251,191,36,.18), #fbbf24 38%, #f97316 68%, #b91c1c); }
+    .tle-fire-mode { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 7px 11px; }
     .tle-fire-mode[hidden] { display: none; }
+    .tle-fire-mode-note { margin: 0; color: #555; white-space: nowrap; }
+    .tle-fire-scale-label { color: #666; font-size: 10px; white-space: nowrap; }
+    .tle-fire-divider { width: 1px; height: 18px; background: #d7d7d7; }
     .tle-fire-footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; min-height: 44px; padding: 8px 12px; color: var(--tle-muted); background: #fafafa; border-top: 1px solid var(--tle-border); font-size: 10.5px; line-height: 1.4; }
     .tle-fire-logo { width: 72px; height: auto; opacity: .62; flex: 0 0 auto; }
     .tle-fire-stale { color: #8a4b00; }
@@ -45,8 +46,11 @@
     .maplibregl-ctrl-group { box-shadow: 0 1px 4px rgba(0,0,0,.2); }
     @media (max-width: 640px) {
       .tle-fire-title { font-size: 19px; }
+      .tle-fire-subtitle { font-size: 13px; }
+      .tle-fire-legend { gap: 8px 10px; }
+      .tle-fire-divider { display: none; }
+      .tle-fire-mode-note { width: 100%; }
       #tle-fire-map { height: 540px; }
-      .tle-fire-legend { left: 8px; bottom: 26px; width: 220px; padding: 9px 10px; }
       .tle-fire-footer { align-items: flex-end; }
       .tle-fire-logo { width: 62px; }
     }
@@ -56,18 +60,14 @@
   <main class="tle-fire-card">
     <header class="tle-fire-head">
       <h1 class="tle-fire-title">Feux actifs et surfaces brûlées en Europe</h1>
-      <p class="tle-fire-subtitle" id="tle-fire-subtitle">Activité VIIRS récente et surfaces brûlées sur trente jours</p>
-    </header>
-
-    <div class="tle-fire-map-wrap">
-      <div id="tle-fire-map" role="img" aria-label="Carte des feux actifs et des surfaces brûlées en Europe"></div>
-      <div class="tle-fire-status" id="tle-fire-status" role="status" aria-live="polite">Chargement du moteur cartographique…</div>
+      <p class="tle-fire-subtitle" id="tle-fire-subtitle">Incendies recensés en Europe et surfaces brûlées au cours des trente derniers jours</p>
       <aside class="tle-fire-legend" aria-label="Légende de la carte">
-        <strong id="tle-fire-legend-title">Activité récente</strong>
-        <p class="tle-fire-mode-note" id="tle-fire-mode-note">Densité des détections des 48 dernières heures</p>
+        <strong id="tle-fire-legend-title">Feux actifs</strong>
+        <p class="tle-fire-mode-note" id="tle-fire-mode-note">Densité sur 48 heures</p>
         <div class="tle-fire-mode" id="tle-fire-density-legend">
+          <span class="tle-fire-scale-label">Faible</span>
           <div class="tle-fire-density"></div>
-          <div class="tle-fire-scale"><span>Faible</span><span>Élevée</span></div>
+          <span class="tle-fire-scale-label">Élevée</span>
         </div>
         <div class="tle-fire-mode" id="tle-fire-points-legend" hidden>
           <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-0)"></span> Moins de 24 heures</div>
@@ -75,13 +75,18 @@
           <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-2)"></span> De 3 à 5 jours</div>
           <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-3)"></span> De 5 à 7 jours</div>
         </div>
-        <hr class="tle-fire-rule">
-        <div class="tle-fire-row"><span class="tle-fire-swatch"></span> Surfaces brûlées, 30 jours</div>
+        <span class="tle-fire-divider" aria-hidden="true"></span>
+        <div class="tle-fire-row"><span class="tle-fire-swatch"></span> Surfaces brûlées</div>
       </aside>
+    </header>
+
+    <div class="tle-fire-map-wrap">
+      <div id="tle-fire-map" role="img" aria-label="Carte des feux actifs et des surfaces brûlées en Europe"></div>
+      <div class="tle-fire-status" id="tle-fire-status" role="status" aria-live="polite">Chargement du moteur cartographique…</div>
     </div>
 
     <footer class="tle-fire-footer">
-      <span id="tle-fire-sources">Sources: NASA FIRMS; EFFIS / Copernicus (périmètres MODIS); OpenStreetMap et CARTO.</span>
+      <span id="tle-fire-sources">Sources: NASA FIRMS, EFFIS / Copernicus — Dernière mise à jour: indisponible</span>
       <img class="tle-fire-logo" src="https://upload.wikimedia.org/wikipedia/commons/6/66/Toute_l%27Europe_Logo.png" alt="Toute l'Europe">
     </footer>
   </main>
@@ -152,9 +157,20 @@
       }
 
       const dateFormatter = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+      const dateTimeFormatter = new Intl.DateTimeFormat('fr-FR', {
+        day: 'numeric', month: 'long', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+        timeZone: 'Europe/Paris'
+      });
       function formatDate(value) {
         if (!value) return '';
         return dateFormatter.format(new Date(value + 'T12:00:00Z'));
+      }
+      function formatDateTime(value) {
+        if (!value) return 'indisponible';
+        const parsed = new Date(value);
+        if (Number.isNaN(parsed.getTime())) return 'indisponible';
+        return dateTimeFormatter.format(parsed);
       }
 
       function baseStyle() {
@@ -235,10 +251,10 @@
         const pointsMode = map.getZoom() >= 5.9;
         densityLegend.hidden = pointsMode;
         pointsLegend.hidden = !pointsMode;
-        legendTitle.textContent = pointsMode ? 'Feux actifs - ancienneté' : 'Activité récente';
+        legendTitle.textContent = 'Feux actifs';
         modeNote.textContent = pointsMode
-          ? 'Détections individuelles des 7 derniers jours'
-          : 'Densité des détections des 48 dernières heures';
+          ? 'Ancienneté sur 7 jours'
+          : 'Densité sur 48 heures';
       }
 
       async function start() {
@@ -267,10 +283,13 @@
         }
 
         if (manifest.active_fires && manifest.burned_areas) {
-          subtitle.textContent = 'Densité VIIRS sur 48 heures, points du ' + formatDate(manifest.active_fires.period_start) + ' au ' + formatDate(manifest.active_fires.period_end) + ' en zoomant; périmètres brûlés EFFIS du ' + formatDate(manifest.burned_areas.period_start) + ' au ' + formatDate(manifest.burned_areas.period_end);
+          subtitle.textContent = 'Incendies recensés en Europe entre le ' + formatDate(manifest.active_fires.period_start) + ' et le ' + formatDate(manifest.active_fires.period_end) + ' et surfaces brûlées entre le ' + formatDate(manifest.burned_areas.period_start) + ' et le ' + formatDate(manifest.burned_areas.period_end);
         } else if (manifest.active_fires) {
-          subtitle.textContent = 'Densité VIIRS sur 48 heures et points du ' + formatDate(manifest.active_fires.period_start) + ' au ' + formatDate(manifest.active_fires.period_end) + ' en zoomant';
+          subtitle.textContent = 'Incendies recensés en Europe entre le ' + formatDate(manifest.active_fires.period_start) + ' et le ' + formatDate(manifest.active_fires.period_end);
         }
+
+        const latestUpdate = manifest.last_run_at || manifest.active_fires?.generated_at || manifest.burned_areas?.generated_at;
+        sources.textContent = 'Sources: NASA FIRMS, EFFIS / Copernicus — Dernière mise à jour: ' + formatDateTime(latestUpdate);
 
         showStatus('Chargement du fond de carte…');
         const map = new maplibregl.Map({
@@ -387,7 +406,7 @@
         const burnedStale = burnedGenerated && now - burnedGenerated > 40 * 3600 * 1000;
         if (activeStale || burnedStale || (manifest.last_run_errors || []).length) {
           sources.classList.add('tle-fire-stale');
-          sources.textContent += ' Dernière mise à jour distante partiellement retardée; les derniers fichiers valides restent affichés.';
+          sources.textContent += ' — Actualisation partiellement retardée';
         }
       }
 
