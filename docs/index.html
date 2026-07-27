@@ -28,23 +28,27 @@
     .tle-fire-status[hidden] { display: none; }
     .tle-fire-status[data-level="warning"] { color: #744900; border-color: #d9bb79; background: rgba(255,250,235,.96); }
     .tle-fire-status[data-level="error"] { color: #8d1e1e; border-color: #d7a3a3; background: rgba(255,245,245,.97); }
-    .tle-fire-legend { position: absolute; left: 12px; bottom: 28px; z-index: 4; max-width: 240px; padding: 10px 12px; background: rgba(255,255,255,.94); border: 1px solid rgba(0,0,0,.12); border-radius: 3px; font-size: 12px; line-height: 1.35; }
+    .tle-fire-legend { position: absolute; left: 12px; bottom: 28px; z-index: 4; width: 245px; padding: 10px 12px; background: rgba(255,255,255,.94); border: 1px solid rgba(0,0,0,.12); border-radius: 3px; font-size: 12px; line-height: 1.35; }
     .tle-fire-legend strong { display: block; margin-bottom: 6px; color: var(--tle-blue); }
     .tle-fire-row { display: flex; align-items: center; gap: 7px; margin: 4px 0; }
-    .tle-fire-dot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
-    .tle-fire-swatch { width: 17px; height: 11px; flex: 0 0 auto; background: rgba(127,29,29,.30); border: 1px solid rgba(127,29,29,.55); }
+    .tle-fire-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+    .tle-fire-swatch { width: 18px; height: 11px; flex: 0 0 auto; background: rgba(105,72,62,.25); border: 1px solid rgba(105,72,62,.52); }
     .tle-fire-rule { margin: 7px 0 6px; border: 0; border-top: 1px solid #ddd; }
+    .tle-fire-density { height: 10px; margin: 5px 0 3px; border-radius: 6px; background: linear-gradient(90deg, rgba(251,191,36,.18), #fbbf24 38%, #f97316 68%, #b91c1c); }
+    .tle-fire-scale { display: flex; justify-content: space-between; color: #666; font-size: 10px; }
+    .tle-fire-mode-note { margin: 0 0 7px; color: #555; }
+    .tle-fire-mode[hidden] { display: none; }
     .tle-fire-footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; min-height: 44px; padding: 8px 12px; color: var(--tle-muted); background: #fafafa; border-top: 1px solid var(--tle-border); font-size: 10.5px; line-height: 1.4; }
-    .tle-fire-logo { width: 76px; height: auto; opacity: .72; flex: 0 0 auto; }
+    .tle-fire-logo { width: 72px; height: auto; opacity: .62; flex: 0 0 auto; }
     .tle-fire-stale { color: #8a4b00; }
     .maplibregl-ctrl-attrib { font-size: 9px !important; }
     .maplibregl-ctrl-group { box-shadow: 0 1px 4px rgba(0,0,0,.2); }
     @media (max-width: 640px) {
       .tle-fire-title { font-size: 19px; }
       #tle-fire-map { height: 540px; }
-      .tle-fire-legend { left: 8px; bottom: 26px; max-width: 210px; padding: 9px 10px; }
+      .tle-fire-legend { left: 8px; bottom: 26px; width: 220px; padding: 9px 10px; }
       .tle-fire-footer { align-items: flex-end; }
-      .tle-fire-logo { width: 65px; }
+      .tle-fire-logo { width: 62px; }
     }
   </style>
 </head>
@@ -52,18 +56,25 @@
   <main class="tle-fire-card">
     <header class="tle-fire-head">
       <h1 class="tle-fire-title">Feux actifs et surfaces brûlées en Europe</h1>
-      <p class="tle-fire-subtitle" id="tle-fire-subtitle">Détections VIIRS sur sept jours et surfaces brûlées sur trente jours</p>
+      <p class="tle-fire-subtitle" id="tle-fire-subtitle">Activité VIIRS récente et surfaces brûlées sur trente jours</p>
     </header>
 
     <div class="tle-fire-map-wrap">
       <div id="tle-fire-map" role="img" aria-label="Carte des feux actifs et des surfaces brûlées en Europe"></div>
       <div class="tle-fire-status" id="tle-fire-status" role="status" aria-live="polite">Chargement du moteur cartographique…</div>
       <aside class="tle-fire-legend" aria-label="Légende de la carte">
-        <strong>Feux actifs - ancienneté</strong>
-        <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-0)"></span> Moins de 24 heures</div>
-        <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-1)"></span> De 1 à 3 jours</div>
-        <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-2)"></span> De 3 à 5 jours</div>
-        <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-3)"></span> De 5 à 7 jours</div>
+        <strong id="tle-fire-legend-title">Activité récente</strong>
+        <p class="tle-fire-mode-note" id="tle-fire-mode-note">Densité des détections des 48 dernières heures</p>
+        <div class="tle-fire-mode" id="tle-fire-density-legend">
+          <div class="tle-fire-density"></div>
+          <div class="tle-fire-scale"><span>Faible</span><span>Élevée</span></div>
+        </div>
+        <div class="tle-fire-mode" id="tle-fire-points-legend" hidden>
+          <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-0)"></span> Moins de 24 heures</div>
+          <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-1)"></span> De 1 à 3 jours</div>
+          <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-2)"></span> De 3 à 5 jours</div>
+          <div class="tle-fire-row"><span class="tle-fire-dot" style="background:var(--recent-3)"></span> De 5 à 7 jours</div>
+        </div>
         <hr class="tle-fire-rule">
         <div class="tle-fire-row"><span class="tle-fire-swatch"></span> Surfaces brûlées, 30 jours</div>
       </aside>
@@ -84,10 +95,15 @@
         'https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js'
       ];
       const DATA_ROOT = './data/';
-      const EUROPE_IMAGE_CORNERS = [[-25, 72], [45, 72], [45, 27], [-25, 27]];
+      const EUROPE_IMAGE_CORNERS = [[-25, 72], [42, 72], [42, 34], [-25, 34]];
+      const FRENCH_LABELS = {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[36.0,58.0]},"properties":{"kind":"country","name":"Russie","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[12.2208,64.6365]},"properties":{"kind":"country","name":"Norvège","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[2.0992,46.8951]},"properties":{"kind":"country","name":"France","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.7862,62.2749]},"properties":{"kind":"country","name":"Suède","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[27.7864,53.706]},"properties":{"kind":"country","name":"Biélorussie","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[30.9808,48.8046]},"properties":{"kind":"country","name":"Ukraine","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[19.0763,51.8844]},"properties":{"kind":"country","name":"Pologne","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.9531,47.9192]},"properties":{"kind":"country","name":"Autriche","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[19.1032,47.2452]},"properties":{"kind":"country","name":"Hongrie","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[28.649,47.1376]},"properties":{"kind":"country","name":"Moldavie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[24.2117,46.036]},"properties":{"kind":"country","name":"Roumanie","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[24.1278,55.0912]},"properties":{"kind":"country","name":"Lituanie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[24.5044,56.8951]},"properties":{"kind":"country","name":"Lettonie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[25.5617,58.4981]},"properties":{"kind":"country","name":"Estonie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[10.4324,51.4312]},"properties":{"kind":"country","name":"Allemagne","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[25.1385,42.7394]},"properties":{"kind":"country","name":"Bulgarie","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[21.8063,39.0805]},"properties":{"kind":"country","name":"Grèce","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[34.2807,38.5969]},"properties":{"kind":"country","name":"Turquie","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[19.9676,41.2479]},"properties":{"kind":"country","name":"Albanie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[15.5836,44.5448]},"properties":{"kind":"country","name":"Croatie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[8.2865,46.8097]},"properties":{"kind":"country","name":"Suisse","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[5.9644,49.7159]},"properties":{"kind":"country","name":"Luxembourg","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[4.7374,50.5797]},"properties":{"kind":"country","name":"Belgique","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[5.3981,52.0402]},"properties":{"kind":"country","name":"Pays-Bas","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-8.3679,39.5108]},"properties":{"kind":"country","name":"Portugal","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-3.52,39.9179]},"properties":{"kind":"country","name":"Espagne","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-7.8067,53.5104]},"properties":{"kind":"country","name":"Irlande","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[12.6312,42.5582]},"properties":{"kind":"country","name":"Italie","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[9.4608,56.3243]},"properties":{"kind":"country","name":"Danemark","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-1.7533,54.2247]},"properties":{"kind":"country","name":"Royaume-Uni","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-18.4579,64.988]},"properties":{"kind":"country","name":"Islande","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.7323,46.1274]},"properties":{"kind":"country","name":"Slovénie","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[27.3733,65.03]},"properties":{"kind":"country","name":"Finlande","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[19.6301,48.7119]},"properties":{"kind":"country","name":"Slovaquie","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[15.5382,49.7583]},"properties":{"kind":"country","name":"Tchéquie","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[33.033,34.8399]},"properties":{"kind":"country","name":"Chypre","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[18.1152,43.8531]},"properties":{"kind":"country","name":"Bosnie-Herzégovine","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[21.7204,41.6811]},"properties":{"kind":"country","name":"Macédoine du Nord","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[21.0135,44.1367]},"properties":{"kind":"country","name":"Serbie","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[19.3962,42.7505]},"properties":{"kind":"country","name":"Monténégro","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[20.9,42.6]},"properties":{"kind":"country","name":"Kosovo","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[1.58,42.55]},"properties":{"kind":"country","name":"Andorre","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.38,35.9]},"properties":{"kind":"country","name":"Malte","rank":3}},{"type":"Feature","geometry":{"type":"Point","coordinates":[19.8188,41.3269]},"properties":{"kind":"capital","name":"Tirana","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[16.3725,48.2084]},"properties":{"kind":"capital","name":"Vienne","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[4.3517,50.8466]},"properties":{"kind":"capital","name":"Bruxelles","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[23.3219,42.6977]},"properties":{"kind":"capital","name":"Sofia","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[18.3867,43.852]},"properties":{"kind":"capital","name":"Sarajevo","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[27.5619,53.9023]},"properties":{"kind":"capital","name":"Minsk","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[7.4515,46.9483]},"properties":{"kind":"capital","name":"Berne","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.4213,50.0875]},"properties":{"kind":"capital","name":"Prague","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[13.3889,52.517]},"properties":{"kind":"capital","name":"Berlin","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[12.5701,55.6867]},"properties":{"kind":"capital","name":"Copenhague","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-3.7036,40.4167]},"properties":{"kind":"capital","name":"Madrid","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[24.7454,59.4372]},"properties":{"kind":"capital","name":"Tallinn","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[24.9426,60.1674]},"properties":{"kind":"capital","name":"Helsinki","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[2.3515,48.8567]},"properties":{"kind":"capital","name":"Paris","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-0.1276,51.5073]},"properties":{"kind":"capital","name":"Londres","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[23.7283,37.9839]},"properties":{"kind":"capital","name":"Athènes","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[15.977,45.8132]},"properties":{"kind":"capital","name":"Zagreb","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-6.2603,53.3498]},"properties":{"kind":"capital","name":"Dublin","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[12.4829,41.8933]},"properties":{"kind":"capital","name":"Rome","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[25.2829,54.687]},"properties":{"kind":"capital","name":"Vilnius","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[6.1297,49.8159]},"properties":{"kind":"capital","name":"Luxembourg","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[24.1052,56.9494]},"properties":{"kind":"capital","name":"Riga","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[28.8323,47.0245]},"properties":{"kind":"capital","name":"Chișinău","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[21.4317,41.9961]},"properties":{"kind":"capital","name":"Skopje","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.5141,35.8992]},"properties":{"kind":"capital","name":"La Valette","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[4.8936,52.3728]},"properties":{"kind":"capital","name":"Amsterdam","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[10.739,59.9133]},"properties":{"kind":"capital","name":"Oslo","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[21.0714,52.2337]},"properties":{"kind":"capital","name":"Varsovie","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-9.1366,38.7078]},"properties":{"kind":"capital","name":"Lisbonne","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[26.1027,44.4361]},"properties":{"kind":"capital","name":"Bucarest","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[37.6175,55.7504]},"properties":{"kind":"capital","name":"Moscou","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[20.4569,44.8178]},"properties":{"kind":"capital","name":"Belgrade","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[17.1093,48.1517]},"properties":{"kind":"capital","name":"Bratislava","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[14.5069,46.05]},"properties":{"kind":"capital","name":"Ljubljana","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[18.0711,59.3251]},"properties":{"kind":"capital","name":"Stockholm","rank":2}},{"type":"Feature","geometry":{"type":"Point","coordinates":[32.8541,39.9208]},"properties":{"kind":"capital","name":"Ankara","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[30.5241,50.45]},"properties":{"kind":"capital","name":"Kyiv","rank":1}},{"type":"Feature","geometry":{"type":"Point","coordinates":[21.1655,42.6629]},"properties":{"kind":"capital","name":"Pristina","rank":2}}]};
       const statusBox = document.getElementById('tle-fire-status');
       const subtitle = document.getElementById('tle-fire-subtitle');
       const sources = document.getElementById('tle-fire-sources');
+      const legendTitle = document.getElementById('tle-fire-legend-title');
+      const modeNote = document.getElementById('tle-fire-mode-note');
+      const densityLegend = document.getElementById('tle-fire-density-legend');
+      const pointsLegend = document.getElementById('tle-fire-points-legend');
 
       function showStatus(message, level = 'info') {
         statusBox.textContent = message;
@@ -142,43 +158,88 @@
         return dateFormatter.format(new Date(value + 'T12:00:00Z'));
       }
 
-      function heatLayer(id, recency, color) {
-        const rgba18 = color.replace('rgb', 'rgba').replace(')', ',0.18)');
-        const rgba55 = color.replace('rgb', 'rgba').replace(')', ',0.55)');
-        return {
-          id,
-          type: 'heatmap',
-          source: 'active-fires',
-          maxzoom: 6.8,
-          filter: ['==', ['get', 'recency'], recency],
-          paint: {
-            'heatmap-weight': 1,
-            'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 2.5, 0.7, 6.5, 1.3],
-            'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 2.5, 10, 6.5, 24],
-            'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 5.7, 0.86, 6.8, 0],
-            'heatmap-color': ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0,0,0,0)', 0.18, rgba18, 0.5, rgba55, 1, color]
-          }
-        };
-      }
-
       function baseStyle() {
         return {
           version: 8,
           sources: {
             'carto-base': {
               type: 'raster',
-              tiles: ['https://a.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', 'https://b.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', 'https://c.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'],
+              tiles: [
+                'https://a.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
+                'https://b.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
+                'https://c.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
+              ],
               tileSize: 256,
               attribution: '© OpenStreetMap contributors © CARTO'
-            },
-            'carto-labels': {
-              type: 'raster',
-              tiles: ['https://a.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', 'https://b.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', 'https://c.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'],
-              tileSize: 256
             }
           },
           layers: [{ id: 'carto-base-layer', type: 'raster', source: 'carto-base' }]
         };
+      }
+
+      function addFrenchLabels(map) {
+        map.addSource('french-labels', { type: 'geojson', data: FRENCH_LABELS });
+        const commonCountryLayout = {
+          'text-field': ['get', 'name'],
+          'text-font': ['Arial'],
+          'text-letter-spacing': 0.06,
+          'text-max-width': 8,
+          'text-allow-overlap': false,
+          'text-ignore-placement': false
+        };
+        const commonCountryPaint = {
+          'text-color': '#69747d',
+          'text-halo-color': 'rgba(255,255,255,.92)',
+          'text-halo-width': 1.35,
+          'text-halo-blur': 0.25
+        };
+
+        map.addLayer({
+          id: 'labels-countries-major', type: 'symbol', source: 'french-labels',
+          filter: ['all', ['==', ['get', 'kind'], 'country'], ['==', ['get', 'rank'], 1]],
+          minzoom: 2.5,
+          layout: { ...commonCountryLayout, 'text-size': ['interpolate', ['linear'], ['zoom'], 3, 10.5, 6, 13], 'text-transform': 'uppercase' },
+          paint: commonCountryPaint
+        });
+        map.addLayer({
+          id: 'labels-countries-medium', type: 'symbol', source: 'french-labels',
+          filter: ['all', ['==', ['get', 'kind'], 'country'], ['==', ['get', 'rank'], 2]],
+          minzoom: 3.45,
+          layout: { ...commonCountryLayout, 'text-size': ['interpolate', ['linear'], ['zoom'], 3.5, 9.5, 6, 12], 'text-transform': 'uppercase' },
+          paint: commonCountryPaint
+        });
+        map.addLayer({
+          id: 'labels-countries-small', type: 'symbol', source: 'french-labels',
+          filter: ['all', ['==', ['get', 'kind'], 'country'], ['==', ['get', 'rank'], 3]],
+          minzoom: 5.15,
+          layout: { ...commonCountryLayout, 'text-size': 10, 'text-transform': 'uppercase' },
+          paint: commonCountryPaint
+        });
+        map.addLayer({
+          id: 'capital-dots', type: 'circle', source: 'french-labels', minzoom: 4.7,
+          filter: ['==', ['get', 'kind'], 'capital'],
+          paint: { 'circle-radius': 1.8, 'circle-color': '#59636b', 'circle-stroke-color': 'rgba(255,255,255,.9)', 'circle-stroke-width': 0.8 }
+        });
+        map.addLayer({
+          id: 'capital-labels', type: 'symbol', source: 'french-labels', minzoom: 4.7,
+          filter: ['==', ['get', 'kind'], 'capital'],
+          layout: {
+            'text-field': ['get', 'name'], 'text-font': ['Arial'],
+            'text-size': ['interpolate', ['linear'], ['zoom'], 4.7, 9.5, 7, 11.5],
+            'text-offset': [0, 0.85], 'text-anchor': 'top', 'text-allow-overlap': false
+          },
+          paint: { 'text-color': '#4f5961', 'text-halo-color': 'rgba(255,255,255,.95)', 'text-halo-width': 1.2 }
+        });
+      }
+
+      function updateLegend(map) {
+        const pointsMode = map.getZoom() >= 5.9;
+        densityLegend.hidden = pointsMode;
+        pointsLegend.hidden = !pointsMode;
+        legendTitle.textContent = pointsMode ? 'Feux actifs - ancienneté' : 'Activité récente';
+        modeNote.textContent = pointsMode
+          ? 'Détections individuelles des 7 derniers jours'
+          : 'Densité des détections des 48 dernières heures';
       }
 
       async function start() {
@@ -200,35 +261,38 @@
         }
 
         if (manifest.active_fires) {
-          subtitle.textContent = 'Feux actifs VIIRS du ' + formatDate(manifest.active_fires.period_start) + ' au ' + formatDate(manifest.active_fires.period_end) + ' ; surfaces brûlées sur les trente derniers jours';
+          subtitle.textContent = 'Densité VIIRS sur 48 heures, points du ' + formatDate(manifest.active_fires.period_start) + ' au ' + formatDate(manifest.active_fires.period_end) + ' en zoomant; surfaces brûlées sur 30 jours';
         }
 
         showStatus('Chargement du fond de carte…');
         const map = new maplibregl.Map({
           container: 'tle-fire-map',
           style: baseStyle(),
-          center: [10, 51],
+          center: [9, 52.5],
           zoom: 3.55,
           minZoom: 3,
-          maxZoom: 8,
-          maxBounds: [[-30, 25], [50, 74]],
+          maxZoom: 8.5,
+          maxBounds: [[-28, 32], [45, 74]],
           attributionControl: true,
           renderWorldCopies: false
         });
 
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
 
-        let fatalMapError = false;
+        let styleReady = false;
+        const loadTimer = window.setTimeout(() => {
+          if (!styleReady) showStatus('Le fond de carte ne répond pas. Vérifiez les requêtes vers jsDelivr et CARTO.', 'warning');
+        }, 30000);
+
         map.on('error', event => {
           const message = event && event.error ? event.error.message : 'Erreur cartographique inconnue';
           console.warn('Erreur cartographique', event.error || event);
-          if (!map.loaded()) {
-            fatalMapError = true;
-            showStatus('Le fond de carte n’a pas pu être chargé: ' + message, 'error');
-          }
+          if (!styleReady) showStatus('Le fond de carte n’a pas pu être chargé: ' + message, 'error');
         });
 
         map.on('load', () => {
+          styleReady = true;
+          window.clearTimeout(loadTimer);
           try {
             if (manifest.burned_areas) {
               map.addSource('burned-areas', {
@@ -237,35 +301,56 @@
                 coordinates: EUROPE_IMAGE_CORNERS
               });
               map.addLayer({
-                id: 'burned-areas-layer',
-                type: 'raster',
-                source: 'burned-areas',
-                paint: { 'raster-opacity': 0.30, 'raster-fade-duration': 0 }
+                id: 'burned-areas-layer', type: 'raster', source: 'burned-areas',
+                paint: {
+                  'raster-opacity': 0.22,
+                  'raster-fade-duration': 0,
+                  'raster-saturation': -0.48,
+                  'raster-contrast': 0.08,
+                  'raster-hue-rotate': 16
+                }
               });
             }
 
-            map.addSource('active-fires', { type: 'geojson', data: fires, maxzoom: 9, tolerance: 0.45, buffer: 32 });
-            const colors = ['rgb(185,28,28)', 'rgb(239,68,68)', 'rgb(249,115,22)', 'rgb(234,179,8)'];
-            [3, 2, 1, 0].forEach(recency => map.addLayer(heatLayer('fires-heat-' + recency, recency, colors[recency])));
+            map.addSource('active-fires', { type: 'geojson', data: fires, maxzoom: 9, tolerance: 0.55, buffer: 24 });
             map.addLayer({
-              id: 'fires-circles',
-              type: 'circle',
-              source: 'active-fires',
-              minzoom: 5.7,
+              id: 'fires-heat-48h', type: 'heatmap', source: 'active-fires', maxzoom: 6.35,
+              filter: ['<=', ['get', 'age_h'], 48],
               paint: {
-                'circle-radius': ['interpolate', ['linear'], ['zoom'], 5.7, 2.1, 8, 4.3],
-                'circle-color': ['match', ['get', 'recency'], 0, colors[0], 1, colors[1], 2, colors[2], colors[3]],
-                'circle-opacity': ['interpolate', ['linear'], ['zoom'], 5.7, 0, 6.5, 0.9],
-                'circle-stroke-color': 'rgba(255,255,255,0.85)',
-                'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5.7, 0, 7, 0.55]
+                'heatmap-weight': ['interpolate', ['linear'], ['get', 'age_h'], 0, 1, 24, 0.72, 48, 0.35],
+                'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 3, 0.48, 6, 0.82],
+                'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 3, 5.5, 6, 12],
+                'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.62, 5.7, 0.68, 6.35, 0],
+                'heatmap-color': [
+                  'interpolate', ['linear'], ['heatmap-density'],
+                  0, 'rgba(0,0,0,0)',
+                  0.18, 'rgba(251,191,36,.18)',
+                  0.38, 'rgba(251,191,36,.72)',
+                  0.66, 'rgba(249,115,22,.84)',
+                  1, 'rgba(185,28,28,.92)'
+                ]
               }
             });
 
-            map.addLayer({ id: 'carto-labels-layer', type: 'raster', source: 'carto-labels', paint: { 'raster-opacity': 1 } });
+            const colors = ['#b91c1c', '#ef4444', '#f97316', '#eab308'];
+            map.addLayer({
+              id: 'fires-circles', type: 'circle', source: 'active-fires', minzoom: 5.9,
+              paint: {
+                'circle-radius': ['interpolate', ['linear'], ['zoom'], 5.9, 1.35, 7, 2.35, 8.5, 3.2],
+                'circle-color': ['match', ['get', 'recency'], 0, colors[0], 1, colors[1], 2, colors[2], colors[3]],
+                'circle-opacity': ['interpolate', ['linear'], ['get', 'age_h'], 0, 0.9, 72, 0.78, 168, 0.48],
+                'circle-stroke-color': 'rgba(255,255,255,.84)',
+                'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5.9, 0, 7, 0.45]
+              }
+            });
+
+            addFrenchLabels(map);
+            updateLegend(map);
+            map.on('zoom', () => updateLegend(map));
 
             const count = Array.isArray(fires.features) ? fires.features.length : 0;
             if (count === 0) {
-              showStatus('Le fond de carte fonctionne, mais aucune détection VIIRS n’a été chargée. Vérifiez l’exécution GitHub Actions et le secret FIRMS_MAP_KEY.', 'warning');
+              showStatus('Le fond fonctionne, mais aucune détection VIIRS n’a été chargée. Vérifiez la dernière exécution GitHub Actions.', 'warning');
             } else {
               hideStatus();
             }
@@ -274,10 +359,6 @@
             showStatus('Le fond est chargé, mais une couche n’a pas pu être ajoutée: ' + error.message, 'error');
           }
         });
-
-        window.setTimeout(() => {
-          if (!map.loaded() && !fatalMapError) showStatus('Le chargement du fond de carte prend anormalement longtemps. Vérifiez les requêtes vers jsDelivr et CARTO.', 'warning');
-        }, 15000);
 
         const activeGenerated = manifest.active_fires?.generated_at ? new Date(manifest.active_fires.generated_at) : null;
         const burnedGenerated = manifest.burned_areas?.generated_at ? new Date(manifest.burned_areas.generated_at) : null;
