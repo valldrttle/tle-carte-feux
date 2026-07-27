@@ -8,371 +8,221 @@ Texte collé(92).txt
 Document
 Voici ci-joint ma version actuelle de la carte. Le problème est que pour cette carte, le temps de chargement est beaucoup trop long. Et parfois la requête WMS EFFIS échoue. Quelles solutions me proposes-tu ?
 
-Parfait. J'ai préparé le dépôt complet, prêt à être ajouté à GitHub:
+Parfait. Il faut maintenant exécuter ce workflow manuellement pour générer les vraies données.
 
-Cette première version utilise:
+    Dans Actions, cliquez sur Mettre à jour la carte des feux dans la colonne de gauche.
 
-    NASA FIRMS, VIIRS NOAA-20 NRT, pour les feux actifs des sept derniers jours;
+    Cliquez sur le bouton Run workflow à droite.
 
-    une couleur par ancienneté: moins de 24 heures, 1 à 3 jours, 3 à 5 jours et 5 à 7 jours;
+    Vérifiez que la branche sélectionnée est main.
 
-    une carte de densité à l'échelle européenne, remplacée progressivement par des points au zoom rapproché;
+    Cliquez à nouveau sur le bouton vert Run workflow.
 
-    une image EFFIS des surfaces brûlées des trente derniers jours, préparée une fois par jour;
+Une nouvelle exécution doit apparaître après quelques secondes. Ouvrez-la, puis cliquez sur le job update.
 
-    MapLibre et un fond vectoriel OpenFreeMap;
+Les étapes doivent notamment inclure:
 
-    GitHub Actions pour actualiser les données toutes les trois heures;
+Récupérer le dépôt
+Installer Python
+Installer les dépendances
+Télécharger et préparer les données
+Enregistrer les nouveaux fichiers
 
-    GitHub Pages pour héberger la carte;
+Résultat attendu
 
-    une iframe légère pour WordPress.
-
-FIRMS limite actuellement l'API Area à cinq jours par requête. Le script effectue donc deux appels puis les fusionne pour couvrir sept jours.
-1. Décompresser l'archive
-
-Décompressez tle-carte-feux-depot.zip.
-
-Vous obtiendrez notamment:
-
-.github/workflows/update-data.yml
-docs/index.html
-docs/data/
-scripts/update_data.py
-requirements.txt
-wordpress-embed.html
-README.md
-
-2. Copier les fichiers dans GitHub
-
-Dans votre dépôt:
-
-https://github.com/valldrttle/tle-carte-feux
-
-cliquez sur:
-
-Add file > Upload files
-
-Glissez le contenu intérieur du dossier tle-carte-feux-depot, et non le dossier parent lui-même.
-
-À la racine du dépôt, vous devez donc voir directement:
-
-.github
-docs
-scripts
-README.md
-requirements.txt
-wordpress-embed.html
-
-Validez avec Commit changes.
-3. Ajouter la clé NASA FIRMS
-
-La clé FIRMS doit rester secrète. NASA fournit gratuitement une MAP_KEY destinée à ses API et services cartographiques.
-
-Dans le dépôt GitHub:
-
-Settings
-> Secrets and variables
-> Actions
-> New repository secret
-
-Renseignez:
-
-Name: FIRMS_MAP_KEY
-Secret: votre clé NASA FIRMS
-
-Ne placez jamais cette clé dans un fichier public du dépôt.
-4. Autoriser GitHub Actions à écrire
-
-Ouvrez:
-
-Settings
-> Actions
-> General
-> Workflow permissions
-
-Sélectionnez:
-
-Read and write permissions
-
-puis enregistrez.
-
-Cette autorisation permet au robot GitHub Actions d'enregistrer les nouveaux fichiers fires.geojson, burned.png et manifest.json.
-5. Activer GitHub Pages
-
-Ouvrez:
-
-Settings
-> Pages
-
-Choisissez:
-
-Source: Deploy from a branch
-Branch: main
-Folder: /docs
-
-puis cliquez sur Save.
-
-GitHub Pages permet précisément de publier un site depuis un dossier d'une branche, notamment le dossier /docs.
-6. Lancer la première mise à jour
-
-Ouvrez l'onglet:
-
-Actions
-
-Sélectionnez:
-
-Mettre à jour la carte des feux
-
-Puis:
-
-Run workflow
-> Branch: main
-> Run workflow
-
-Ce premier lancement:
-
-    télécharge les détections VIIRS NOAA-20;
-
-    les convertit en GeoJSON allégé;
-
-    calcule leur ancienneté;
-
-    télécharge l'image EFFIS des trente derniers jours;
-
-    enregistre les données dans docs/data;
-
-    crée automatiquement un commit.
-
-Les workflows planifiés GitHub utilisent une expression cron. Celui du dépôt est programmé toutes les trois heures, à la minute 17.
-7. Vérifier la carte
-
-L'adresse attendue est:
-
-https://valldrttle.github.io/tle-carte-feux/
-
-La carte peut également être ouverte depuis le lien indiqué dans Settings > Pages.
-
-Le moteur utilise un fond OpenFreeMap compatible MapLibre, sans clé de fond de carte.
-8. Intégrer la carte dans WordPress
-
-Le fichier:
-
-wordpress-embed.html
-
-contient le bloc suivant:
-
-<div style="max-width:1040px;margin:20px auto;">
-  <iframe
-    src="https://valldrttle.github.io/tle-carte-feux/"
-    title="Carte des feux actifs et des surfaces brûlées en Europe"
-    loading="lazy"
-    style="display:block;width:100%;height:780px;border:0;overflow:hidden;"
-    referrerpolicy="strict-origin-when-cross-origin"
-  ></iframe>
-</div>
-
-Copiez-le dans un bloc HTML personnalisé WordPress.
-Comportement prévu
-
-Les lecteurs de votre site ne contacteront plus directement NASA ou EFFIS. Ils chargeront seulement deux fichiers statiques depuis GitHub Pages:
-
-docs/data/fires.geojson
-docs/data/burned.png
-
-Les déplacements et les zooms seront donc calculés localement par MapLibre. Les couches GeoJSON peuvent être rendues sous forme de carte de chaleur ou de points sans nouvelle requête aux fournisseurs.
-
-En cas d'échec temporaire d'EFFIS ou de FIRMS, le script conserve le dernier fichier valide. Le pied de la carte signale simplement que la mise à jour distante a été retardée.
-
-Je suis perdu à l'étape 4. Je ne trouve pas quelle action je dois faire
-
-L'étape 4 correspond à un réglage situé assez bas dans la page GitHub.
-
-Dans votre dépôt tle-carte-feux:
-
-    Cliquez sur Settings.
-
-    Dans la colonne de gauche, ouvrez Actions.
-
-    Cliquez sur General.
-
-    Faites défiler la page presque tout en bas jusqu'à la section Workflow permissions.
-
-    Sélectionnez Read and write permissions.
-
-    Cliquez sur Save. GitHub place bien ce réglage dans Settings > Actions > General.
-
-Ne cochez pas nécessairement Allow GitHub Actions to create and approve pull requests: notre automatisation n'en a pas besoin.
-Si vous ne voyez pas «Workflow permissions»
-
-Vous pouvez passer à l'étape suivante pour le moment. Le fichier que je vous ai fourni contient déjà cette instruction:
-
-permissions:
-  contents: write
-
-Elle demande explicitement au robot GitHub l'autorisation de modifier les fichiers du dépôt. GitHub permet de définir ces droits directement dans le fichier du workflow avec la clé permissions.
-
-Lancez donc la première mise à jour dans:
-
-Actions > Mettre à jour la carte des feux > Run workflow
-
-Si l'exécution échoue sur l'étape git push avec un message du type Permission denied, 403 ou Write access not granted, nous reviendrons alors précisément sur ce réglage.
-
-Ma carte reste vierge, alors que j'ai respecté toutes les étapes : "https://valldrttle.github.io/tle-carte-feux/" 
-Et je n'ai pas de message d'erreur
-
-J'ai identifié un défaut dans la version que je vous ai fournie.
-
-Le dépôt initial contient volontairement des fichiers d'attente:
-
-    fires.geojson: vide, avec zéro détection;
-
-    burned.png: image transparente de 2 × 2 pixels;
-
-    manifest.json: sans information active_fires.
-
-Le script devait les remplacer lors du premier lancement. Mais il contenait une erreur logique: si FIRMS échouait, le workflow pouvait malgré tout apparaître comme réussi, car il vérifiait seulement que fires.geojson existait, sans vérifier qu'il contenait réellement des données.
-
-Par ailleurs, les erreurs du fond cartographique étaient seulement écrites dans la console. Cela explique la carte vierge sans message visible.
-Correctif préparé
-
-Vous pouvez télécharger l'ensemble corrigé:
-
-Ou remplacer uniquement les deux fichiers concernés:
-
-La nouvelle page utilise toujours MapLibre 5.24.0, mais avec un fond raster CARTO défini directement dans le code. Elle ne dépend donc plus du chargement d'un style OpenFreeMap distant. MapLibre 5.24.0 est bien une version publiée et les fonds OpenFreeMap sont normalement compatibles; la modification vise surtout à réduire les dépendances et à rendre les erreurs visibles.
-1. Remplacer docs/index.html
-
-Dans votre dépôt GitHub:
-
-    Ouvrez le dossier docs.
-
-    Ouvrez index.html.
-
-    Cliquez sur l'icône crayon Edit this file.
-
-    Supprimez tout le contenu.
-
-    Ouvrez le fichier corrigé téléchargé:
-
-    Copiez tout son contenu dans GitHub.
-
-    Cliquez sur Commit changes.
-
-Le fichier doit toujours s'appeler exactement:
-
-docs/index.html
-
-2. Remplacer scripts/update_data.py
-
-Dans GitHub:
-
-    Ouvrez le dossier scripts.
-
-    Ouvrez update_data.py.
-
-    Cliquez sur le crayon.
-
-    Remplacez son contenu par celui de:
-
-    Validez avec Commit changes.
-
-La version corrigée fait désormais échouer clairement GitHub Actions lorsque FIRMS ne répond pas et qu'aucune donnée valide n'est disponible.
-3. Relancer l'automatisation
-
-Ouvrez:
-
-Actions
-> Mettre à jour la carte des feux
-> Run workflow
-> Run workflow
-
-Lorsque l'exécution est terminée, ouvrez-la et vérifiez l'étape:
+Toutes les étapes doivent devenir vertes. L'étape la plus importante est:
 
 Télécharger et préparer les données
 
-Vous devez voir une ligne similaire à:
+Elle devrait afficher un message indiquant qu'un certain nombre de détections VIIRS ont été enregistrées.
 
-Feux actifs: 1234 détections enregistrées.
+Ensuite, GitHub doit créer automatiquement un commit nommé:
 
-Le nombre exact sera différent.
+Mise à jour automatique des données incendies
 
-Si cette étape est rouge, le message sera désormais explicite, par exemple:
-
-Le secret GitHub FIRMS_MAP_KEY n'est pas défini.
-
-ou:
-
-Réponse FIRMS invalide
-
-4. Vérifier directement les données
-
-Ouvrez ces deux adresses dans votre navigateur:
+Après cela, contrôlez de nouveau:
 
 https://valldrttle.github.io/tle-carte-feux/data/manifest.json
 
-https://valldrttle.github.io/tle-carte-feux/data/fires.geojson
+Le manifeste devra contenir une section active_fires et un champ count supérieur à zéro. La publication GitHub Pages peut prendre une ou deux minutes après le commit.
 
-Le manifeste doit contenir
+Si le workflow devient rouge, ouvrez l'étape rouge et copiez ici le message d'erreur complet, en particulier celui de Télécharger et préparer les données.
 
-"active_fires": {
-  "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-  "generated_at": "...",
-  "period_start": "...",
-  "period_end": "...",
-  "count": 1234
-}
+Message rouge : "1 error
+update
+Process completed with exit code 1." 
 
-Le champ count doit être supérieur à zéro.
-Le GeoJSON doit contenir
+Le code 1 signifie ici une chose précise: la récupération NASA FIRMS a échoué et aucun ancien fichier fires.geojson valide n'était disponible. Le serveur EFFIS peut également avoir échoué, mais une panne EFFIS seule ne provoquerait pas cet arrêt si les points FIRMS avaient bien été récupérés.
 
-{
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [...]
-      }
-    }
-  ]
-}
+Le message utile se trouve quelques lignes avant Process completed with exit code 1.
+Retrouver l'erreur exacte
 
-Si vous voyez:
+Dans GitHub:
 
-{"type":"FeatureCollection","features":[]}
+    Ouvrez Actions.
 
-la collecte FIRMS n'a pas fonctionné.
-5. Recharger la carte
+    Cliquez sur l'exécution rouge de Mettre à jour la carte des feux.
 
-Rechargez ensuite:
+    Cliquez sur le bloc update.
 
-https://valldrttle.github.io/tle-carte-feux/
+    Ouvrez l'étape marquée d'une croix rouge, probablement Télécharger et préparer les données.
 
-Utilisez un rechargement forcé:
+    Descendez tout en bas.
 
-    Windows: Ctrl + F5;
+Cherchez une ligne commençant par:
 
-    macOS: Cmd + Shift + R.
+AVERTISSEMENT - NASA FIRMS:
 
-La nouvelle version ne doit plus rester silencieusement vierge. Elle affichera l'un de ces diagnostics:
+ou:
 
-    Le fond fonctionne, mais aucune détection VIIRS n'a été chargée;
+ÉCHEC - aucune donnée FIRMS valide n'est disponible dans le dépôt.
 
-    Le fond de carte n'a pas pu être chargé;
+GitHub développe normalement automatiquement les journaux de l'étape qui a échoué.
+Vérification la plus probable: la clé FIRMS
 
-    Une couche n'a pas pu être ajoutée;
+Ouvrez:
 
-    MapLibre n'a pas pu être téléchargé.
+Settings > Secrets and variables > Actions > Repository secrets
 
-GitHub Pages publie les fichiers du dossier /docs lorsque cette source a été sélectionnée dans les paramètres du dépôt.
+Vous devez voir exactement:
 
-Le point le plus important est maintenant de vérifier le contenu de manifest.json: il permettra de savoir immédiatement si le problème vient encore de la collecte FIRMS ou uniquement de l'affichage.
+FIRMS_MAP_KEY
+
+Attention:
+
+    ce doit être un Repository secret, pas une variable;
+
+    le nom doit être strictement FIRMS_MAP_KEY;
+
+    la valeur doit être uniquement la clé, sans guillemets ni espace;
+
+    GitHub ne montre jamais la valeur après l'enregistrement, seulement le nom.
+
+Le workflow transmet ce secret au script avec:
+
+env:
+  FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}
+
+NASA exige une MAP_KEY valide pour utiliser l'API Area, et la source VIIRS_NOAA20_NRT employée par le script est bien une source actuellement acceptée.
+Si le secret est absent
+
+Cliquez sur New repository secret, puis saisissez:
+
+Name: FIRMS_MAP_KEY
+Secret: votre clé NASA
+
+Enregistrez et relancez le workflow.
+Si le secret existe déjà
+
+Recréez-le avec la clé reçue de NASA:
+
+    Cliquez sur FIRMS_MAP_KEY.
+
+    Cliquez sur Update secret.
+
+    Recopiez la clé NASA sans espaces.
+
+    Relancez le workflow.
+
+Ne publiez pas la valeur de cette clé ici. Copiez seulement les 5 à 10 lignes du journal situées juste avant Process completed with exit code 1; elles permettront d'identifier immédiatement si la clé est absente, invalide ou si FIRMS a renvoyé une autre erreur.
+
+Voici mon message d'erreur : 
+"Run python scripts/update_data.py
+  python scripts/update_data.py
+  shell: /usr/bin/bash -e {0}
+  env:
+    pythonLocation: /opt/hostedtoolcache/Python/3.13.14/x64
+    PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.14/x64/lib/pkgconfig
+    Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.14/x64
+    Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.14/x64
+    Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.14/x64
+    LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.14/x64/lib
+    FIRMS_MAP_KEY: ***
+    FORCE_BURNED: 1
+  File "/home/runner/work/tle-carte-feux/tle-carte-feux/scripts/update_data.py", line 3
+    OK. J'ai déjà un fond de carte paramétré comme je l'entends dans le code ci-joint. (La carte porte sur un tout autre sujet, mais j'aimerais garder cet aspect visuel.
+                                                                                                                                      ^
+SyntaxError: unterminated string literal (detected at line 3)
+Error: Process completed with exit code 1." 
+
+L'erreur est clairement identifiée: le fichier scripts/update_data.py ne contient pas le script Python attendu.
+
+À la ligne 3, GitHub trouve ce texte:
+
+OK. J'ai déjà un fond de carte paramétré...
+
+Ce texte provient d'un ancien échange et n'est pas du code Python. La clé FIRMS est en revanche bien transmise, puisque le journal affiche:
+
+FIRMS_MAP_KEY: ***
+
+Remplacer le fichier incorrect
+
+Téléchargez d'abord le script propre:
+
+Puis, dans votre dépôt GitHub:
+
+    Ouvrez:
+    scripts > update_data.py
+
+    Cliquez sur l'icône en forme de crayon Edit this file.
+
+    Sélectionnez tout le contenu avec Ctrl + A ou Cmd + A.
+
+    Supprimez-le entièrement.
+
+    Ouvrez le fichier corrigé téléchargé avec un éditeur de texte.
+
+    Copiez l'intégralité de son contenu.
+
+    Collez-le dans l'éditeur GitHub.
+
+    Cliquez sur Commit changes.
+
+    Confirmez le commit sur la branche main.
+
+Le début du fichier doit être exactement de cette forme:
+
+#!/usr/bin/env python3
+"""Met à jour les données statiques de la carte des feux.
+
+- Feux actifs : NASA FIRMS, VIIRS NOAA-20 NRT, 7 jours.
+- Surfaces brûlées : image WMS EFFIS MODIS + VIIRS NRT, 30 jours.
+
+Les fichiers précédents sont conservés si une source distante échoue.
+"""
+
+Il ne doit plus contenir la phrase:
+
+OK. J'ai déjà un fond de carte...
+
+Relancer l'action
+
+Après le commit:
+
+    Ouvrez Actions.
+
+    Sélectionnez Mettre à jour la carte des feux.
+
+    Cliquez sur Run workflow.
+
+    Choisissez la branche main.
+
+    Confirmez avec Run workflow.
+
+Cette fois, l'étape:
+
+Télécharger et préparer les données
+
+doit dépasser immédiatement la ligne 3 et commencer à contacter NASA FIRMS.
+
+Après une exécution verte, vérifiez:
+
+https://valldrttle.github.io/tle-carte-feux/data/manifest.json
+
+Le champ last_run_at ne devra plus être null, et une section active_fires avec un nombre de détections devra apparaître.
 
 
-Bibliothèque
-/update_data_corrige.py
+update_data_corrige.py
 
 #!/usr/bin/env python3
 """Met à jour les données statiques de la carte des feux.
@@ -688,8 +538,7 @@ def main() -> int:
 if __name__ == "__main__":
     sys.exit(main())
 
-Bibliothèque
-/update_data_corrige.py
+update_data_corrige.py
 
 #!/usr/bin/env python3
 """Met à jour les données statiques de la carte des feux.
