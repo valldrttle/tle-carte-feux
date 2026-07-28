@@ -1,56 +1,90 @@
 {
-  "version": 2,
-  "last_run_at": "2026-07-28T03:34:02.040329Z",
+  "version": 3,
+  "last_run_at": "2026-07-28T07:59:56.198851Z",
   "last_run_errors": [],
   "active_fires": {
-    "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-07-28T03:33:58.906557Z",
+    "source": "NASA FIRMS - VIIRS NOAA-20, NOAA-21 et Suomi-NPP NRT",
+    "generated_at": "2026-07-28T07:55:42.376972Z",
     "period_start": "2026-07-22",
     "period_end": "2026-07-28",
-    "count": 15822,
-    "excluded_low_confidence": 1505,
+    "count": 2053,
+    "raw_detections_after_basic_filters": 50331,
+    "candidate_clusters": 4488,
+    "excluded_low_confidence": 4348,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 71,
-    "excluded_known_industrial_sites": 71,
-    "excluded_recurrent_thermal_cells": 0,
+    "excluded_probable_industrial": 417,
+    "excluded_known_industrial_sites": 271,
+    "excluded_recurrent_thermal_cells": 146,
+    "excluded_unconfirmed_clusters": 2435,
+    "confirmed_by_effis": 0,
+    "confirmed_by_burned_perimeter": 368,
+    "confirmed_by_multiple_viirs": 1919,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "industrial_filter": {
-      "known_sites": 6,
+    "sources_status": {
+      "VIIRS_NOAA20_NRT": {
+        "label": "NOAA-20",
+        "role": "primary",
+        "rows": 17966,
+        "error": null
+      },
+      "VIIRS_NOAA21_NRT": {
+        "label": "NOAA-21",
+        "role": "primary",
+        "rows": 17719,
+        "error": null
+      },
+      "VIIRS_SNPP_NRT": {
+        "label": "Suomi-NPP",
+        "role": "supporting",
+        "rows": 18994,
+        "error": null
+      }
+    },
+    "filtering": {
+      "effis_active_fire_mask": {
+        "available": false,
+        "error": "TIME=2026-07-22/2026-07-28: le masque VIIRS EFFIS est entièrement vide; TIME=2026-07-22,2026-07-28: le masque VIIRS EFFIS est entièrement vide",
+        "layer": "viirs.hs"
+      },
+      "cluster_radius_km": 1.25,
+      "cluster_max_time_gap_hours": 42,
+      "known_industrial_sites": 6,
       "history_window_days": 30,
       "recurrent_threshold_distinct_days": 8,
-      "recurrent_cells_in_history": 0,
-      "audit_file": "industrial-thermal.geojson"
+      "recurrent_cells_in_history": 12,
+      "industrial_audit_file": "industrial-thermal.geojson",
+      "unconfirmed_audit_file": "unconfirmed-thermal.geojson"
     }
   },
   "burned_areas": {
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-07-27T15:46:39.471284Z",
-    "period_start": "2026-06-27",
-    "period_end": "2026-07-27",
-    "count": 2267,
-    "total_area_ha": 631510.0,
+    "generated_at": "2026-07-28T07:54:02.723665Z",
+    "period_start": "2026-06-28",
+    "period_end": "2026-07-28",
+    "count": 2200,
+    "total_area_ha": 623270.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 230492487,
-    "geojson_bytes": 1905487,
+    "archive_bytes": 230631693,
+    "geojson_bytes": 1869674,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 2267,
-      "total_area_ha": 631510.0,
-      "records_read": 102090,
-      "rejected_outside_period": 99710,
-      "rejected_outside_extent": 113,
+      "count": 2200,
+      "total_area_ha": 623270.0,
+      "records_read": 102100,
+      "rejected_outside_period": 99788,
+      "rejected_outside_extent": 112,
       "rejected_invalid_geometry": 0
     }
   }
