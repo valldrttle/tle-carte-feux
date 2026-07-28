@@ -2,8 +2,9 @@
 """Met à jour les données statiques de la carte des feux.
 
 - Feux actifs : NASA FIRMS, trois instruments VIIRS NRT, 7 jours.
-- Validation : masque VIIRS filtré d'EFFIS, corroboration multi-satellite,
-  regroupement spatial et temporel, puis filtre des sources thermiques fixes.
+- Validation équilibrée : masque VIIRS filtré d'EFFIS, corroboration multi-satellite,
+  regroupement spatial et temporel, signaux récents ou de confiance élevée, puis
+  filtre conservateur des sources thermiques fixes.
 - Surfaces brûlées : périmètres vectoriels EFFIS MODIS, 30 jours.
 
 Les visiteurs ne contactent jamais NASA ou EFFIS : les données préparées sont
@@ -72,16 +73,16 @@ EFFIS_MASK_HEIGHT = 1100
 EFFIS_MASK_SAMPLE_RADIUS_PX = 2
 
 # Regroupement des observations satellitaires en événements probables.
-CLUSTER_RADIUS_KM = 1.25
-CLUSTER_MAX_TIME_GAP_HOURS = 42
+CLUSTER_RADIUS_KM = 0.9
+CLUSTER_MAX_TIME_GAP_HOURS = 30
 CLUSTER_GRID_DEGREES = 0.02
 
-# Grille proche de la résolution VIIRS (375 m). Une cellule n'est classée comme
-# source thermique récurrente qu'après observation pendant au moins huit jours
-# distincts sur une fenêtre de trente jours.
+# Grille proche de la résolution VIIRS (375 m). La récurrence n'est plus un
+# motif d'exclusion automatique : elle ne devient un signal négatif qu'après
+# quinze jours distincts et seulement pour un groupe sans autre confirmation.
 THERMAL_CELL_DEGREES = 0.004
 THERMAL_HISTORY_DAYS = 30
-RECURRENT_MIN_DISTINCT_DAYS = 8
+RECURRENT_MIN_DISTINCT_DAYS = 15
 BURNED_PROTECTION_BUFFER_DEGREES = 0.006
 
 # Masque initial volontairement limité aux installations déjà identifiées.
@@ -113,7 +114,7 @@ def build_session() -> requests.Session:
     session = requests.Session()
     session.mount("https://", HTTPAdapter(max_retries=retry))
     session.headers.update({
-        "User-Agent": "tle-carte-feux/3.0 (+https://github.com/valldrttle/tle-carte-feux)"
+        "User-Agent": "tle-carte-feux/3.1 (+https://github.com/valldrttle/tle-carte-feux)"
     })
     return session
 
@@ -324,15 +325,16 @@ def probable_industrial_reason(
     history: dict[str, set[str]],
     burned_protection: Any | None,
 ) -> tuple[str, str | None] | None:
+    # Les périmètres brûlés récents protègent un foyer réel situé près d'une
+    # installation. En dehors de ce cas, seuls les sites industriels connus
+    # sont exclus immédiatement. La récurrence générique est évaluée plus tard
+    # au niveau du groupe et ne suffit plus, à elle seule, à supprimer un point.
     if point_is_near_burned(longitude, latitude, burned_protection):
         return None
 
     site = known_thermal_site(longitude, latitude)
     if site is not None:
         return "site_industriel_connu", str(site["name"])
-
-    if len(history.get(cell_key, set())) >= RECURRENT_MIN_DISTINCT_DAYS:
-        return "anomalie_thermique_recurrente", None
     return None
 
 
@@ -524,6 +526,9 @@ def cluster_summary(members: list[dict[str, Any]]) -> dict[str, Any]:
     effis_confirmed = any(member.get("effis_confirmed", False) for member in members)
     burned_confirmed = any(member.get("burned_confirmed", False) for member in members)
     max_frp = max((member["frp"] for member in members), default=0.0)
+    recurrent_days = max((int(member.get("recurrent_days", 0)) for member in members), default=0)
+    has_primary = bool(primary_sources)
+    latest_age = float(latest["age_hours"])
 
     score = 0
     if effis_confirmed:
@@ -532,25 +537,51 @@ def cluster_summary(members: list[dict[str, Any]]) -> dict[str, Any]:
         score += 5
     if len(primary_sources) >= 2:
         score += 4
-    elif len(primary_sources) >= 1 and len(sources) >= 2:
+    elif has_primary and len(sources) >= 2:
         score += 3
     if len(passes) >= 2:
         score += 2
-    if len(members) >= 3:
-        score += 2
+    if len(members) >= 2:
+        score += 1
     if high_count:
+        score += 2
+    if max_frp >= 6:
         score += 1
-    if max_frp >= 10:
+    if latest_age <= 24:
         score += 1
+    if recurrent_days >= RECURRENT_MIN_DISTINCT_DAYS:
+        score -= 4
 
-    accepted = bool(
+    # Niveau 1 : validation forte par EFFIS, périmètre brûlé ou les deux
+    # satellites NOAA principaux.
+    confirmed = bool(
         effis_confirmed
         or burned_confirmed
         or len(primary_sources) >= 2
-        or (len(primary_sources) >= 1 and len(sources) >= 2 and len(passes) >= 2)
-        or (high_count > 0 and len(passes) >= 2 and len(members) >= 2)
-        or (high_count > 0 and len(members) >= 3)
     )
+
+    # Niveau 2 : signal probable. Cela réintroduit notamment les nouveaux feux
+    # vus une seule fois avec une confiance élevée, ainsi que les détections
+    # nominales très récentes ou énergétiques. Suomi-NPP seul ne suffit pas.
+    probable = bool(
+        not confirmed
+        and has_primary
+        and (
+            high_count > 0
+            or len(passes) >= 2
+            or len(members) >= 2
+            or (max_frp >= 6 and latest_age <= 72)
+            or latest_age <= 24
+        )
+    )
+
+    # Une cellule extrêmement récurrente sans confirmation externe reste
+    # masquée. Ce seuil est volontairement beaucoup plus prudent qu'en v10.
+    if recurrent_days >= RECURRENT_MIN_DISTINCT_DAYS and not confirmed:
+        probable = False
+
+    accepted = confirmed or probable
+    reliability = "confirmed" if confirmed else ("probable" if probable else "unconfirmed")
 
     evidence: list[str] = []
     if effis_confirmed:
@@ -567,9 +598,16 @@ def cluster_summary(members: list[dict[str, Any]]) -> dict[str, Any]:
         evidence.append("groupe spatial")
     if high_count:
         evidence.append("confiance élevée")
+    if max_frp >= 6:
+        evidence.append("puissance thermique notable")
+    if latest_age <= 24:
+        evidence.append("détection récente")
+    if recurrent_days >= RECURRENT_MIN_DISTINCT_DAYS:
+        evidence.append("source très récurrente")
 
     return {
         "accepted": accepted,
+        "reliability": reliability,
         "representative": latest,
         "observations": len(members),
         "passes": len(passes),
@@ -580,6 +618,7 @@ def cluster_summary(members: list[dict[str, Any]]) -> dict[str, Any]:
         "effis_confirmed": effis_confirmed,
         "burned_confirmed": burned_confirmed,
         "max_frp": round(max_frp, 1),
+        "recurrent_days": recurrent_days,
         "score": score,
         "evidence": evidence,
     }
@@ -599,6 +638,8 @@ def cluster_feature(summary: dict[str, Any], rejected: bool = False) -> dict[str
         "effis_confirmed": summary["effis_confirmed"],
         "burned_confirmed": summary["burned_confirmed"],
         "evidence_score": summary["score"],
+        "reliability": summary["reliability"],
+        "recurrent_days": summary["recurrent_days"],
         "evidence": ", ".join(summary["evidence"]),
     }
     if rejected:
@@ -739,6 +780,7 @@ def update_active_fires(session: requests.Session, manifest: dict[str, Any]) -> 
         candidate["effis_confirmed"] = bool(
             mask_tiles and effis_mask_matches(candidate["longitude"], candidate["latitude"], mask_tiles)
         )
+        candidate["recurrent_days"] = len(history.get(candidate["cell_key"], set()))
         reason = probable_industrial_reason(
             candidate["longitude"],
             candidate["latitude"],
@@ -780,11 +822,15 @@ def update_active_fires(session: requests.Session, manifest: dict[str, Any]) -> 
     confirmed_by_effis = 0
     confirmed_by_burned = 0
     confirmed_multi_viirs = 0
+    confirmed_clusters = 0
+    probable_clusters = 0
 
     for members in clusters:
         summary = cluster_summary(members)
         if summary["accepted"]:
             accepted_features.append(cluster_feature(summary))
+            confirmed_clusters += int(summary["reliability"] == "confirmed")
+            probable_clusters += int(summary["reliability"] == "probable")
             confirmed_by_effis += int(summary["effis_confirmed"])
             confirmed_by_burned += int(summary["burned_confirmed"])
             confirmed_multi_viirs += int(len(summary["sources"]) >= 2)
@@ -837,6 +883,8 @@ def update_active_fires(session: requests.Session, manifest: dict[str, Any]) -> 
         "excluded_known_industrial_sites": excluded_known_sites,
         "excluded_recurrent_thermal_cells": excluded_recurrent,
         "excluded_unconfirmed_clusters": len(unconfirmed_features),
+        "confirmed_clusters": confirmed_clusters,
+        "probable_clusters": probable_clusters,
         "confirmed_by_effis": confirmed_by_effis,
         "confirmed_by_burned_perimeter": confirmed_by_burned,
         "confirmed_by_multiple_viirs": confirmed_multi_viirs,
@@ -863,8 +911,9 @@ def update_active_fires(session: requests.Session, manifest: dict[str, Any]) -> 
         },
     }
     log(
-        f"Feux probables: {len(accepted_features)} groupes retenus sur {len(clusters)}; "
-        f"{len(unconfirmed_features)} groupes non corroborés, "
+        f"Feux affichés: {len(accepted_features)} groupes retenus sur {len(clusters)} "
+        f"({confirmed_clusters} confirmés, {probable_clusters} probables); "
+        f"{len(unconfirmed_features)} signaux faibles isolés, "
         f"{len(industrial_features)} sources industrielles probables, "
         f"{excluded_low_confidence} détections de faible confiance et "
         f"{excluded_non_vegetation} détections non végétales écartées."
