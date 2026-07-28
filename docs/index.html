@@ -40,7 +40,9 @@
     .tle-fire-mode-note { margin: 0; color: #555; white-space: nowrap; }
     .tle-fire-scale-label { color: #666; font-size: 10px; white-space: nowrap; }
     .tle-fire-divider { width: 1px; height: 18px; background: #d7d7d7; }
-    .tle-fire-footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; min-height: 44px; padding: 8px 12px; color: var(--tle-muted); background: #fafafa; border-top: 1px solid var(--tle-border); font-size: 10.5px; line-height: 1.4; }
+    .tle-fire-footer { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; min-height: 58px; padding: 9px 12px 10px; color: var(--tle-muted); background: #fafafa; border-top: 1px solid var(--tle-border); font-size: 10.5px; line-height: 1.4; }
+    .tle-fire-footer-copy { min-width: 0; flex: 1 1 auto; }
+    .tle-fire-footer-note { margin-top: 4px; max-width: 870px; color: #6b6b6b; font-size: 10px; line-height: 1.35; }
     .tle-fire-logo { width: 72px; height: auto; opacity: .62; flex: 0 0 auto; }
     .tle-fire-stale { color: #8a4b00; }
     .maplibregl-ctrl-attrib { font-size: 9px !important; }
@@ -52,7 +54,8 @@
       .tle-fire-divider { display: none; }
       .tle-fire-mode-note { width: 100%; }
       #tle-fire-map { height: 540px; }
-      .tle-fire-footer { align-items: flex-end; }
+      .tle-fire-footer { align-items: flex-start; }
+      .tle-fire-footer-note { font-size: 9.5px; }
       .tle-fire-logo { width: 62px; }
     }
   </style>
@@ -78,7 +81,7 @@
         </div>
         <span class="tle-fire-divider" aria-hidden="true"></span>
         <div class="tle-fire-row"><span class="tle-fire-swatch"></span> Surfaces brûlées <span class="tle-fire-legend-detail">(visible en zoomant)</span></div>
-        <span class="tle-fire-legend-detail" title="Les détections confirmées sont privilégiées. Les signaux récents, énergétiques ou de confiance élevée peuvent aussi être affichés comme probables; seuls les signaux faibles isolés et les sources industrielles identifiées sont masqués.">Feux confirmés et probables; signaux faibles isolés filtrés</span>
+        <span class="tle-fire-legend-detail" title="Les anomalies thermiques récurrentes associées à des installations industrielles probables sont retirées de la couche des feux actifs.">Sources industrielles récurrentes filtrées</span>
       </aside>
     </header>
 
@@ -88,7 +91,10 @@
     </div>
 
     <footer class="tle-fire-footer">
-      <span id="tle-fire-sources">Sources: NASA FIRMS, EFFIS / Copernicus — Dernière mise à jour: indisponible</span>
+      <div class="tle-fire-footer-copy">
+        <div id="tle-fire-sources">Sources: NASA FIRMS, EFFIS / Copernicus — Dernière mise à jour: indisponible</div>
+        <div class="tle-fire-footer-note">Les points signalent des anomalies thermiques détectées par satellite: ils peuvent correspondre à des incendies, mais aussi à des brûlages agricoles, des fumées chaudes, des torchères industrielles ou d'autres sources de chaleur.</div>
+      </div>
       <img class="tle-fire-logo" src="https://upload.wikimedia.org/wikipedia/commons/6/66/Toute_l%27Europe_Logo.png" alt="Toute l'Europe">
     </footer>
   </main>
@@ -555,11 +561,7 @@
               id: 'fires-heat-48h', type: 'heatmap', source: 'active-fires', maxzoom: 6.35,
               filter: ['<=', ['get', 'age_h'], 48],
               paint: {
-                'heatmap-weight': [
-                  '*',
-                  ['interpolate', ['linear'], ['get', 'age_h'], 0, 1, 24, 0.72, 48, 0.35],
-                  ['match', ['get', 'reliability'], 'confirmed', 1, 'probable', 0.62, 0.5]
-                ],
+                'heatmap-weight': ['interpolate', ['linear'], ['get', 'age_h'], 0, 1, 24, 0.72, 48, 0.35],
                 'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 3, 0.48, 6, 0.82],
                 'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 3, 5.5, 6, 12],
                 'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.62, 5.7, 0.68, 6.35, 0],
@@ -578,17 +580,9 @@
             map.addLayer({
               id: 'fires-circles', type: 'circle', source: 'active-fires', minzoom: 5.9,
               paint: {
-                'circle-radius': [
-                  '*',
-                  ['interpolate', ['linear'], ['zoom'], 5.9, 1.35, 7, 2.35, 8.5, 3.2],
-                  ['match', ['get', 'reliability'], 'confirmed', 1, 'probable', 0.82, 0.75]
-                ],
+                'circle-radius': ['interpolate', ['linear'], ['zoom'], 5.9, 1.35, 7, 2.35, 8.5, 3.2],
                 'circle-color': ['match', ['get', 'recency'], 0, colors[0], 1, colors[1], 2, colors[2], colors[3]],
-                'circle-opacity': [
-                  '*',
-                  ['interpolate', ['linear'], ['get', 'age_h'], 0, 0.9, 72, 0.78, 168, 0.48],
-                  ['match', ['get', 'reliability'], 'confirmed', 1, 'probable', 0.72, 0.65]
-                ],
+                'circle-opacity': ['interpolate', ['linear'], ['get', 'age_h'], 0, 0.9, 72, 0.78, 168, 0.48],
                 'circle-stroke-color': 'rgba(255,255,255,.84)',
                 'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5.9, 0, 7, 0.45]
               }
