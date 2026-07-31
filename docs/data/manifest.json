@@ -1,20 +1,18 @@
 {
   "version": 2,
-  "last_run_at": "2026-07-31T03:50:47.175858Z",
-  "last_run_errors": [
-    "NASA FIRMS: HTTPSConnectionPool(host='firms.modaps.eosdis.nasa.gov', port=443): Max retries exceeded with url: /api/area/csv/7413b98a02c44501030c20aa957f52d7/VIIRS_NOAA20_NRT/-25.0,34.0,42.0,72.0/5 (Caused by NewConnectionError(\"HTTPSConnection(host='firms.modaps.eosdis.nasa.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))"
-  ],
+  "last_run_at": "2026-07-31T09:31:35.228040Z",
+  "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-07-30T22:18:38.739216Z",
-    "period_start": "2026-07-24",
-    "period_end": "2026-07-30",
-    "count": 15196,
-    "excluded_low_confidence": 1450,
+    "generated_at": "2026-07-31T09:16:17.284513Z",
+    "period_start": "2026-07-25",
+    "period_end": "2026-07-31",
+    "count": 12250,
+    "excluded_low_confidence": 1106,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 491,
-    "excluded_known_industrial_sites": 87,
-    "excluded_recurrent_thermal_cells": 404,
+    "excluded_probable_industrial": 445,
+    "excluded_known_industrial_sites": 81,
+    "excluded_recurrent_thermal_cells": 364,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -25,7 +23,7 @@
       "known_sites": 6,
       "history_window_days": 30,
       "recurrent_threshold_distinct_days": 8,
-      "recurrent_cells_in_history": 72,
+      "recurrent_cells_in_history": 75,
       "audit_file": "industrial-thermal.geojson"
     }
   },
@@ -33,26 +31,26 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-07-30T08:49:10.610674Z",
-    "period_start": "2026-06-30",
-    "period_end": "2026-07-30",
-    "count": 2287,
-    "total_area_ha": 636061.0,
+    "generated_at": "2026-07-31T09:16:20.547287Z",
+    "period_start": "2026-07-01",
+    "period_end": "2026-07-31",
+    "count": 2271,
+    "total_area_ha": 656504.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 232092127,
-    "geojson_bytes": 1982687,
+    "archive_bytes": 233057931,
+    "geojson_bytes": 2036515,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 2287,
-      "total_area_ha": 636061.0,
-      "records_read": 102375,
-      "rejected_outside_period": 99951,
-      "rejected_outside_extent": 137,
+      "count": 2271,
+      "total_area_ha": 656504.0,
+      "records_read": 102469,
+      "rejected_outside_period": 100057,
+      "rejected_outside_extent": 141,
       "rejected_invalid_geometry": 0
     }
   }
