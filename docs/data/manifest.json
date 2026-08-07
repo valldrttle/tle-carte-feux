@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "last_run_at": "2026-08-07T05:04:11.738883Z",
+  "last_run_at": "2026-08-07T07:41:23.220798Z",
   "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-08-07T05:04:07.887738Z",
+    "generated_at": "2026-08-07T07:40:15.230125Z",
     "period_start": "2026-08-01",
     "period_end": "2026-08-07",
     "count": 13132,
@@ -31,26 +31,26 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-08-06T09:05:00.644706Z",
-    "period_start": "2026-07-07",
-    "period_end": "2026-08-06",
-    "count": 2304,
-    "total_area_ha": 644809.0,
+    "generated_at": "2026-08-07T07:40:18.672527Z",
+    "period_start": "2026-07-08",
+    "period_end": "2026-08-07",
+    "count": 2361,
+    "total_area_ha": 644232.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 235902293,
-    "geojson_bytes": 2132580,
+    "archive_bytes": 236416167,
+    "geojson_bytes": 2157318,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 2304,
-      "total_area_ha": 644809.0,
-      "records_read": 103129,
-      "rejected_outside_period": 100673,
-      "rejected_outside_extent": 152,
+      "count": 2361,
+      "total_area_ha": 644232.0,
+      "records_read": 103252,
+      "rejected_outside_period": 100738,
+      "rejected_outside_extent": 153,
       "rejected_invalid_geometry": 0
     }
   }
