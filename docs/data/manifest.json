@@ -1,20 +1,18 @@
 {
   "version": 2,
-  "last_run_at": "2026-08-10T10:37:57.442937Z",
-  "last_run_errors": [
-    "NASA FIRMS: HTTPSConnectionPool(host='firms.modaps.eosdis.nasa.gov', port=443): Max retries exceeded with url: /api/area/csv/7413b98a02c44501030c20aa957f52d7/VIIRS_NOAA20_NRT/-25.0,34.0,42.0,72.0/5 (Caused by NewConnectionError(\"HTTPSConnection(host='firms.modaps.eosdis.nasa.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))"
-  ],
+  "last_run_at": "2026-08-10T13:42:50.585179Z",
+  "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-08-10T08:03:27.573328Z",
+    "generated_at": "2026-08-10T13:42:46.906765Z",
     "period_start": "2026-08-04",
     "period_end": "2026-08-10",
-    "count": 14705,
-    "excluded_low_confidence": 2124,
+    "count": 15318,
+    "excluded_low_confidence": 2252,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 1811,
+    "excluded_probable_industrial": 1824,
     "excluded_known_industrial_sites": 92,
-    "excluded_recurrent_thermal_cells": 1719,
+    "excluded_recurrent_thermal_cells": 1732,
     "geographic_extent": [
       -25.0,
       34.0,
