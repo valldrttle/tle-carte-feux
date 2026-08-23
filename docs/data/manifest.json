@@ -1,14 +1,14 @@
 {
   "version": 2,
-  "last_run_at": "2026-08-23T15:35:27.153406Z",
+  "last_run_at": "2026-08-23T18:47:39.715130Z",
   "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-08-23T15:35:24.157420Z",
+    "generated_at": "2026-08-23T18:47:37.159373Z",
     "period_start": "2026-08-17",
     "period_end": "2026-08-23",
-    "count": 19306,
-    "excluded_low_confidence": 2672,
+    "count": 19308,
+    "excluded_low_confidence": 2673,
     "excluded_non_vegetation": 0,
     "excluded_probable_industrial": 1530,
     "excluded_known_industrial_sites": 58,
