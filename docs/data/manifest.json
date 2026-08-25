@@ -1,18 +1,18 @@
 {
   "version": 2,
-  "last_run_at": "2026-08-25T09:50:39.283096Z",
+  "last_run_at": "2026-08-25T13:10:31.377057Z",
   "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-08-25T09:50:36.339455Z",
+    "generated_at": "2026-08-25T13:10:28.949259Z",
     "period_start": "2026-08-19",
     "period_end": "2026-08-25",
-    "count": 17080,
-    "excluded_low_confidence": 2270,
+    "count": 18058,
+    "excluded_low_confidence": 2579,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 1674,
+    "excluded_probable_industrial": 1684,
     "excluded_known_industrial_sites": 61,
-    "excluded_recurrent_thermal_cells": 1613,
+    "excluded_recurrent_thermal_cells": 1623,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -23,7 +23,7 @@
       "known_sites": 6,
       "history_window_days": 30,
       "recurrent_threshold_distinct_days": 8,
-      "recurrent_cells_in_history": 601,
+      "recurrent_cells_in_history": 603,
       "audit_file": "industrial-thermal.geojson"
     }
   },
