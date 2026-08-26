@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "last_run_at": "2026-08-25T21:45:19.873660Z",
+  "last_run_at": "2026-08-26T02:00:42.013699Z",
   "last_run_errors": [
     "NASA FIRMS: HTTPSConnectionPool(host='firms.modaps.eosdis.nasa.gov', port=443): Max retries exceeded with url: /api/area/csv/7413b98a02c44501030c20aa957f52d7/VIIRS_NOAA20_NRT/-25.0,34.0,42.0,72.0/5 (Caused by NewConnectionError(\"HTTPSConnection(host='firms.modaps.eosdis.nasa.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))"
   ],
@@ -33,26 +33,26 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-08-25T01:51:15.214717Z",
-    "period_start": "2026-07-26",
-    "period_end": "2026-08-25",
-    "count": 2427,
-    "total_area_ha": 381152.0,
+    "generated_at": "2026-08-26T01:59:40.874947Z",
+    "period_start": "2026-07-27",
+    "period_end": "2026-08-26",
+    "count": 2467,
+    "total_area_ha": 380600.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 242589445,
-    "geojson_bytes": 1776550,
+    "archive_bytes": 243041017,
+    "geojson_bytes": 1843455,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 2427,
-      "total_area_ha": 381152.0,
-      "records_read": 105072,
-      "rejected_outside_period": 102548,
-      "rejected_outside_extent": 97,
+      "count": 2467,
+      "total_area_ha": 380600.0,
+      "records_read": 105152,
+      "rejected_outside_period": 102589,
+      "rejected_outside_extent": 96,
       "rejected_invalid_geometry": 0
     }
   }
