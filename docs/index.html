@@ -181,24 +181,22 @@
         return dateTimeFormatter.format(parsed);
       }
 
-      function baseStyle() {
-        return {
-          version: 8,
-          glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
-          sources: {
-            'carto-base': {
-              type: 'raster',
-              tiles: [
-                'https://a.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
-                'https://b.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
-                'https://c.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
-              ],
-              tileSize: 256,
-              attribution: '© OpenStreetMap contributors © CARTO'
+      function hideOpenFreeMapLabels(map) {
+        const style = map.getStyle();
+        if (!style || !Array.isArray(style.layers)) return;
+
+        for (const layer of style.layers) {
+          // Le fond Positron sert uniquement de contexte géographique.
+          // Toutes ses étiquettes et icônes sont masquées afin de conserver
+          // uniquement nos noms français de pays, capitales et communes.
+          if (layer.type === 'symbol') {
+            try {
+              map.setLayoutProperty(layer.id, 'visibility', 'none');
+            } catch (error) {
+              console.debug('Couche OpenFreeMap non modifiable:', layer.id, error);
             }
-          },
-          layers: [{ id: 'carto-base-layer', type: 'raster', source: 'carto-base' }]
-        };
+          }
+        }
       }
 
       function addFrenchLabels(map) {
@@ -501,7 +499,7 @@
         showStatus('Chargement du fond de carte…');
         const map = new maplibregl.Map({
           container: 'tle-fire-map',
-          style: baseStyle(),
+          style: OPENFREEMAP_STYLE_URL,
           center: [9, 52.5],
           zoom: 3.55,
           minZoom: 3,
@@ -515,7 +513,7 @@
 
         let styleReady = false;
         const loadTimer = window.setTimeout(() => {
-          if (!styleReady) showStatus('Le fond de carte ne répond pas. Vérifiez les requêtes vers jsDelivr et CARTO.', 'warning');
+          if (!styleReady) showStatus('Le fond de carte ne répond pas. Vérifiez les requêtes vers jsDelivr et OpenFreeMap.', 'warning');
         }, 30000);
 
         map.on('error', event => {
@@ -528,6 +526,7 @@
           styleReady = true;
           window.clearTimeout(loadTimer);
           try {
+            hideOpenFreeMapLabels(map);
             map.addSource('burned-areas', {
               type: 'geojson',
               data: burned,
