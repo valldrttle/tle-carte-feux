@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "last_run_at": "2026-08-29T10:04:05.048981Z",
+  "last_run_at": "2026-08-29T16:44:26.434203Z",
   "last_run_errors": [
     "NASA FIRMS: HTTPSConnectionPool(host='firms.modaps.eosdis.nasa.gov', port=443): Max retries exceeded with url: /api/area/csv/7413b98a02c44501030c20aa957f52d7/VIIRS_NOAA20_NRT/-25.0,34.0,42.0,72.0/5 (Caused by NewConnectionError(\"HTTPSConnection(host='firms.modaps.eosdis.nasa.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))"
   ],
