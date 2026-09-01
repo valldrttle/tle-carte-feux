@@ -1,20 +1,18 @@
 {
   "version": 2,
-  "last_run_at": "2026-09-01T14:10:41.565025Z",
-  "last_run_errors": [
-    "NASA FIRMS: HTTPSConnectionPool(host='firms.modaps.eosdis.nasa.gov', port=443): Max retries exceeded with url: /api/area/csv/7413b98a02c44501030c20aa957f52d7/VIIRS_NOAA20_NRT/-25.0,34.0,42.0,72.0/5 (Caused by NewConnectionError(\"HTTPSConnection(host='firms.modaps.eosdis.nasa.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))"
-  ],
+  "last_run_at": "2026-09-01T18:30:30.074948Z",
+  "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-09-01T08:37:33.716972Z",
+    "generated_at": "2026-09-01T18:29:29.517809Z",
     "period_start": "2026-08-26",
     "period_end": "2026-09-01",
-    "count": 15110,
-    "excluded_low_confidence": 1713,
+    "count": 16514,
+    "excluded_low_confidence": 2028,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 1557,
-    "excluded_known_industrial_sites": 61,
-    "excluded_recurrent_thermal_cells": 1496,
+    "excluded_probable_industrial": 1586,
+    "excluded_known_industrial_sites": 63,
+    "excluded_recurrent_thermal_cells": 1523,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -33,26 +31,26 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-08-31T20:49:42.584837Z",
-    "period_start": "2026-08-01",
-    "period_end": "2026-08-31",
-    "count": 2457,
-    "total_area_ha": 479612.0,
+    "generated_at": "2026-09-01T18:29:31.381667Z",
+    "period_start": "2026-08-02",
+    "period_end": "2026-09-01",
+    "count": 2463,
+    "total_area_ha": 494912.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 246037830,
-    "geojson_bytes": 1832595,
+    "archive_bytes": 246639398,
+    "geojson_bytes": 1870880,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 2457,
-      "total_area_ha": 479612.0,
-      "records_read": 105622,
-      "rejected_outside_period": 103095,
-      "rejected_outside_extent": 70,
+      "count": 2463,
+      "total_area_ha": 494912.0,
+      "records_read": 105789,
+      "rejected_outside_period": 103250,
+      "rejected_outside_extent": 76,
       "rejected_invalid_geometry": 0
     }
   }
