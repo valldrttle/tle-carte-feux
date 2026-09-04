@@ -1,7 +1,9 @@
 {
   "version": 2,
-  "last_run_at": "2026-09-04T16:21:26.556299Z",
-  "last_run_errors": [],
+  "last_run_at": "2026-09-04T20:45:01.100177Z",
+  "last_run_errors": [
+    "NASA FIRMS: 500 Server Error: Internal Server Error for url: https://firms.modaps.eosdis.nasa.gov/api/area/csv/7413b98a02c44501030c20aa957f52d7/VIIRS_NOAA20_NRT/-25.0,34.0,42.0,72.0/5"
+  ],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
     "generated_at": "2026-09-04T16:20:22.298855Z",
