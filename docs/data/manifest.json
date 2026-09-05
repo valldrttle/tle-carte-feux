@@ -1,13 +1,10 @@
 {
   "version": 2,
-  "last_run_at": "2026-09-05T20:21:52.753693Z",
-  "last_run_errors": [
-    "NASA FIRMS: HTTPSConnectionPool(host='firms.modaps.eosdis.nasa.gov', port=443): Max retries exceeded with url: /api/area/csv/7413b98a02c44501030c20aa957f52d7/VIIRS_NOAA20_NRT/-25.0,34.0,42.0,72.0/5 (Caused by NewConnectionError(\"HTTPSConnection(host='firms.modaps.eosdis.nasa.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
-    "EFFIS: 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+%3E%3D+%272026-08-06%27+AND+firedate+%3C%3D+%272026-09-05%27; 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+BETWEEN+%272026-08-06%27+AND+%272026-09-05%27; 500 Server Error: Internal Server Error for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326"
-  ],
+  "last_run_at": "2026-09-05T22:55:14.605242Z",
+  "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-09-05T17:20:02.040713Z",
+    "generated_at": "2026-09-05T22:54:07.170898Z",
     "period_start": "2026-08-30",
     "period_end": "2026-09-05",
     "count": 13956,
@@ -34,26 +31,26 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-09-04T16:20:25.089516Z",
-    "period_start": "2026-08-05",
-    "period_end": "2026-09-04",
-    "count": 2487,
-    "total_area_ha": 499690.0,
+    "generated_at": "2026-09-05T22:54:10.082861Z",
+    "period_start": "2026-08-06",
+    "period_end": "2026-09-05",
+    "count": 2373,
+    "total_area_ha": 491627.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 247901933,
-    "geojson_bytes": 1916077,
+    "archive_bytes": 248148953,
+    "geojson_bytes": 1837189,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 2487,
-      "total_area_ha": 499690.0,
+      "count": 2373,
+      "total_area_ha": 491627.0,
       "records_read": 106098,
-      "rejected_outside_period": 103541,
-      "rejected_outside_extent": 70,
+      "rejected_outside_period": 103662,
+      "rejected_outside_extent": 63,
       "rejected_invalid_geometry": 0
     }
   }
