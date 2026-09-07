@@ -1,20 +1,18 @@
 {
   "version": 2,
-  "last_run_at": "2026-09-07T04:41:31.468722Z",
-  "last_run_errors": [
-    "NASA FIRMS: HTTPSConnectionPool(host='firms.modaps.eosdis.nasa.gov', port=443): Max retries exceeded with url: /api/area/csv/7413b98a02c44501030c20aa957f52d7/VIIRS_NOAA20_NRT/-25.0,34.0,42.0,72.0/5 (Caused by NewConnectionError(\"HTTPSConnection(host='firms.modaps.eosdis.nasa.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))"
-  ],
+  "last_run_at": "2026-09-07T12:29:36.421470Z",
+  "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-09-06T20:23:02.238760Z",
-    "period_start": "2026-08-31",
-    "period_end": "2026-09-06",
-    "count": 14638,
-    "excluded_low_confidence": 1809,
+    "generated_at": "2026-09-07T12:29:33.515827Z",
+    "period_start": "2026-09-01",
+    "period_end": "2026-09-07",
+    "count": 14478,
+    "excluded_low_confidence": 1603,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 1493,
-    "excluded_known_industrial_sites": 76,
-    "excluded_recurrent_thermal_cells": 1417,
+    "excluded_probable_industrial": 1465,
+    "excluded_known_industrial_sites": 70,
+    "excluded_recurrent_thermal_cells": 1395,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -25,7 +23,7 @@
       "known_sites": 6,
       "history_window_days": 30,
       "recurrent_threshold_distinct_days": 8,
-      "recurrent_cells_in_history": 504,
+      "recurrent_cells_in_history": 499,
       "audit_file": "industrial-thermal.geojson"
     }
   },
