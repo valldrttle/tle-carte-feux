@@ -1,21 +1,18 @@
 {
   "version": 2,
-  "last_run_at": "2026-09-19T15:55:33.531310Z",
-  "last_run_errors": [
-    "NASA FIRMS: HTTPSConnectionPool(host='firms.modaps.eosdis.nasa.gov', port=443): Max retries exceeded with url: /api/area/csv/7413b98a02c44501030c20aa957f52d7/VIIRS_NOAA20_NRT/-25.0,34.0,42.0,72.0/5 (Caused by NewConnectionError(\"HTTPSConnection(host='firms.modaps.eosdis.nasa.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
-    "EFFIS: 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+%3E%3D+%272026-08-20%27+AND+firedate+%3C%3D+%272026-09-19%27; 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+BETWEEN+%272026-08-20%27+AND+%272026-09-19%27; 500 Server Error: Internal Server Error for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326"
-  ],
+  "last_run_at": "2026-09-19T20:40:14.743307Z",
+  "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-09-19T10:56:47.229246Z",
+    "generated_at": "2026-09-19T20:38:17.368799Z",
     "period_start": "2026-09-13",
     "period_end": "2026-09-19",
-    "count": 6403,
-    "excluded_low_confidence": 580,
+    "count": 7266,
+    "excluded_low_confidence": 692,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 1140,
+    "excluded_probable_industrial": 1171,
     "excluded_known_industrial_sites": 65,
-    "excluded_recurrent_thermal_cells": 1075,
+    "excluded_recurrent_thermal_cells": 1106,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -26,7 +23,7 @@
       "known_sites": 6,
       "history_window_days": 30,
       "recurrent_threshold_distinct_days": 8,
-      "recurrent_cells_in_history": 438,
+      "recurrent_cells_in_history": 440,
       "audit_file": "industrial-thermal.geojson"
     }
   },
@@ -34,25 +31,25 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-09-18T11:11:57.004296Z",
-    "period_start": "2026-08-19",
-    "period_end": "2026-09-18",
-    "count": 2255,
-    "total_area_ha": 410499.0,
+    "generated_at": "2026-09-19T20:38:19.489034Z",
+    "period_start": "2026-08-20",
+    "period_end": "2026-09-19",
+    "count": 2216,
+    "total_area_ha": 408308.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 255942762,
-    "geojson_bytes": 1749786,
+    "archive_bytes": 256296020,
+    "geojson_bytes": 1740904,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 2255,
-      "total_area_ha": 410499.0,
-      "records_read": 107236,
-      "rejected_outside_period": 104923,
+      "count": 2216,
+      "total_area_ha": 408308.0,
+      "records_read": 107259,
+      "rejected_outside_period": 104985,
       "rejected_outside_extent": 58,
       "rejected_invalid_geometry": 0
     }
