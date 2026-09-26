@@ -1,18 +1,18 @@
 {
   "version": 2,
-  "last_run_at": "2026-09-26T11:22:50.480368Z",
+  "last_run_at": "2026-09-26T16:23:29.872061Z",
   "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-09-26T11:22:48.975811Z",
+    "generated_at": "2026-09-26T16:22:24.416023Z",
     "period_start": "2026-09-20",
     "period_end": "2026-09-26",
-    "count": 5739,
-    "excluded_low_confidence": 520,
+    "count": 6169,
+    "excluded_low_confidence": 616,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 1209,
-    "excluded_known_industrial_sites": 72,
-    "excluded_recurrent_thermal_cells": 1137,
+    "excluded_probable_industrial": 1237,
+    "excluded_known_industrial_sites": 73,
+    "excluded_recurrent_thermal_cells": 1164,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -23,7 +23,7 @@
       "known_sites": 6,
       "history_window_days": 30,
       "recurrent_threshold_distinct_days": 8,
-      "recurrent_cells_in_history": 402,
+      "recurrent_cells_in_history": 404,
       "audit_file": "industrial-thermal.geojson"
     }
   },
@@ -31,26 +31,26 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-09-25T17:09:17.607265Z",
-    "period_start": "2026-08-26",
-    "period_end": "2026-09-25",
-    "count": 2113,
-    "total_area_ha": 339056.0,
+    "generated_at": "2026-09-26T16:22:26.597950Z",
+    "period_start": "2026-08-27",
+    "period_end": "2026-09-26",
+    "count": 1977,
+    "total_area_ha": 227504.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 258071720,
-    "geojson_bytes": 1628256,
+    "archive_bytes": 258071624,
+    "geojson_bytes": 1457608,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 2113,
-      "total_area_ha": 339056.0,
+      "count": 1977,
+      "total_area_ha": 227504.0,
       "records_read": 107708,
-      "rejected_outside_period": 105552,
-      "rejected_outside_extent": 43,
+      "rejected_outside_period": 105692,
+      "rejected_outside_extent": 39,
       "rejected_invalid_geometry": 0
     }
   }
