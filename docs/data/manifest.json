@@ -1,20 +1,18 @@
 {
   "version": 2,
-  "last_run_at": "2026-10-12T10:47:48.886396Z",
-  "last_run_errors": [
-    "EFFIS: 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+%3E%3D+%272026-09-12%27+AND+firedate+%3C%3D+%272026-10-12%27; 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+BETWEEN+%272026-09-12%27+AND+%272026-10-12%27; 500 Server Error: Internal Server Error for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326"
-  ],
+  "last_run_at": "2026-10-12T21:16:46.500851Z",
+  "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-10-12T10:45:59.916545Z",
+    "generated_at": "2026-10-12T21:15:42.614551Z",
     "period_start": "2026-10-06",
     "period_end": "2026-10-12",
-    "count": 8779,
-    "excluded_low_confidence": 479,
+    "count": 8832,
+    "excluded_low_confidence": 481,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 1104,
+    "excluded_probable_industrial": 1105,
     "excluded_known_industrial_sites": 41,
-    "excluded_recurrent_thermal_cells": 1063,
+    "excluded_recurrent_thermal_cells": 1064,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -33,26 +31,26 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-10-11T12:47:05.042661Z",
-    "period_start": "2026-09-11",
-    "period_end": "2026-10-11",
-    "count": 1324,
-    "total_area_ha": 68890.0,
+    "generated_at": "2026-10-12T21:15:43.766972Z",
+    "period_start": "2026-09-12",
+    "period_end": "2026-10-12",
+    "count": 1318,
+    "total_area_ha": 60471.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 259818299,
-    "geojson_bytes": 769768,
+    "archive_bytes": 260326603,
+    "geojson_bytes": 756623,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 1324,
-      "total_area_ha": 68890.0,
-      "records_read": 108629,
-      "rejected_outside_period": 107286,
-      "rejected_outside_extent": 19,
+      "count": 1318,
+      "total_area_ha": 60471.0,
+      "records_read": 108688,
+      "rejected_outside_period": 107350,
+      "rejected_outside_extent": 20,
       "rejected_invalid_geometry": 0
     }
   }
