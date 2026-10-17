@@ -1,18 +1,18 @@
 {
   "version": 2,
-  "last_run_at": "2026-10-17T10:41:13.175421Z",
+  "last_run_at": "2026-10-17T15:33:17.596181Z",
   "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-10-17T10:41:12.350909Z",
+    "generated_at": "2026-10-17T15:32:07.849263Z",
     "period_start": "2026-10-11",
     "period_end": "2026-10-17",
-    "count": 3516,
-    "excluded_low_confidence": 164,
+    "count": 3733,
+    "excluded_low_confidence": 169,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 759,
-    "excluded_known_industrial_sites": 63,
-    "excluded_recurrent_thermal_cells": 696,
+    "excluded_probable_industrial": 783,
+    "excluded_known_industrial_sites": 64,
+    "excluded_recurrent_thermal_cells": 719,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -23,7 +23,7 @@
       "known_sites": 6,
       "history_window_days": 30,
       "recurrent_threshold_distinct_days": 8,
-      "recurrent_cells_in_history": 319,
+      "recurrent_cells_in_history": 320,
       "audit_file": "industrial-thermal.geojson"
     }
   },
@@ -31,26 +31,26 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-10-16T16:37:11.041897Z",
-    "period_start": "2026-09-16",
-    "period_end": "2026-10-16",
-    "count": 1245,
-    "total_area_ha": 50498.0,
+    "generated_at": "2026-10-17T15:32:08.669284Z",
+    "period_start": "2026-09-17",
+    "period_end": "2026-10-17",
+    "count": 1199,
+    "total_area_ha": 48921.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 260259243,
-    "geojson_bytes": 688763,
+    "archive_bytes": 260259245,
+    "geojson_bytes": 658487,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 1245,
-      "total_area_ha": 50498.0,
+      "count": 1199,
+      "total_area_ha": 48921.0,
       "records_read": 108797,
-      "rejected_outside_period": 107544,
-      "rejected_outside_extent": 8,
+      "rejected_outside_period": 107592,
+      "rejected_outside_extent": 6,
       "rejected_invalid_geometry": 0
     }
   }
