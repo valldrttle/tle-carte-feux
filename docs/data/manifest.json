@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "last_run_at": "2026-10-22T17:08:37.290852Z",
+  "last_run_at": "2026-10-22T21:33:45.632930Z",
   "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-10-22T17:08:36.636629Z",
+    "generated_at": "2026-10-22T21:33:45.170663Z",
     "period_start": "2026-10-16",
     "period_end": "2026-10-22",
     "count": 3873,
