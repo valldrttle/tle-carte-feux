@@ -1,18 +1,18 @@
 {
   "version": 2,
-  "last_run_at": "2026-10-29T00:53:54.935103Z",
+  "last_run_at": "2026-10-29T09:57:07.848543Z",
   "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-10-29T00:53:54.478061Z",
+    "generated_at": "2026-10-29T09:56:07.543034Z",
     "period_start": "2026-10-23",
     "period_end": "2026-10-29",
-    "count": 5196,
+    "count": 5460,
     "excluded_low_confidence": 136,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 606,
-    "excluded_known_industrial_sites": 34,
-    "excluded_recurrent_thermal_cells": 572,
+    "excluded_probable_industrial": 716,
+    "excluded_known_industrial_sites": 36,
+    "excluded_recurrent_thermal_cells": 680,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -23,7 +23,7 @@
       "known_sites": 6,
       "history_window_days": 30,
       "recurrent_threshold_distinct_days": 8,
-      "recurrent_cells_in_history": 268,
+      "recurrent_cells_in_history": 281,
       "audit_file": "industrial-thermal.geojson"
     }
   },
@@ -31,26 +31,26 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-10-28T12:56:22.289010Z",
-    "period_start": "2026-09-28",
-    "period_end": "2026-10-28",
-    "count": 863,
-    "total_area_ha": 29155.0,
+    "generated_at": "2026-10-29T09:56:08.195518Z",
+    "period_start": "2026-09-29",
+    "period_end": "2026-10-29",
+    "count": 800,
+    "total_area_ha": 27689.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 261246024,
-    "geojson_bytes": 434963,
+    "archive_bytes": 261313450,
+    "geojson_bytes": 408424,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 863,
-      "total_area_ha": 29155.0,
-      "records_read": 109084,
-      "rejected_outside_period": 108216,
-      "rejected_outside_extent": 5,
+      "count": 800,
+      "total_area_ha": 27689.0,
+      "records_read": 109115,
+      "rejected_outside_period": 108311,
+      "rejected_outside_extent": 4,
       "rejected_invalid_geometry": 0
     }
   }
