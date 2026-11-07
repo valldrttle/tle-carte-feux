@@ -1,18 +1,20 @@
 {
   "version": 2,
-  "last_run_at": "2026-11-07T05:55:53.037302Z",
-  "last_run_errors": [],
+  "last_run_at": "2026-11-07T13:00:34.601736Z",
+  "last_run_errors": [
+    "EFFIS: 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+%3E%3D+%272026-10-08%27+AND+firedate+%3C%3D+%272026-11-07%27; 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+BETWEEN+%272026-10-08%27+AND+%272026-11-07%27; 500 Server Error: Internal Server Error for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326"
+  ],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-11-07T05:55:52.803357Z",
+    "generated_at": "2026-11-07T12:57:32.986813Z",
     "period_start": "2026-11-01",
     "period_end": "2026-11-07",
-    "count": 1935,
-    "excluded_low_confidence": 18,
+    "count": 1983,
+    "excluded_low_confidence": 22,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 454,
+    "excluded_probable_industrial": 460,
     "excluded_known_industrial_sites": 39,
-    "excluded_recurrent_thermal_cells": 415,
+    "excluded_recurrent_thermal_cells": 421,
     "geographic_extent": [
       -25.0,
       34.0,
