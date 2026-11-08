@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "last_run_at": "2026-11-08T17:54:59.025804Z",
+  "last_run_at": "2026-11-08T22:02:09.802796Z",
   "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-11-08T17:54:58.812723Z",
+    "generated_at": "2026-11-08T22:01:10.031473Z",
     "period_start": "2026-11-02",
     "period_end": "2026-11-08",
     "count": 2025,
@@ -31,7 +31,7 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-11-08T00:33:34.763153Z",
+    "generated_at": "2026-11-08T22:01:10.246648Z",
     "period_start": "2026-10-09",
     "period_end": "2026-11-08",
     "count": 338,
@@ -42,7 +42,7 @@
       42.0,
       72.0
     ],
-    "archive_bytes": 261647541,
+    "archive_bytes": 261647496,
     "geojson_bytes": 163947,
     "filter": "aucun (filtrage local)",
     "processing": {
