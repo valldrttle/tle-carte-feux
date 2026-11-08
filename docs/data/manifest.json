@@ -1,20 +1,18 @@
 {
   "version": 2,
-  "last_run_at": "2026-11-07T19:26:26.999530Z",
-  "last_run_errors": [
-    "EFFIS: 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+%3E%3D+%272026-10-08%27+AND+firedate+%3C%3D+%272026-11-07%27; 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+BETWEEN+%272026-10-08%27+AND+%272026-11-07%27; 500 Server Error: Internal Server Error for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326"
-  ],
+  "last_run_at": "2026-11-08T00:34:34.765121Z",
+  "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-11-07T19:24:52.868399Z",
-    "period_start": "2026-11-01",
-    "period_end": "2026-11-07",
-    "count": 2023,
-    "excluded_low_confidence": 22,
+    "generated_at": "2026-11-08T00:33:34.525911Z",
+    "period_start": "2026-11-02",
+    "period_end": "2026-11-08",
+    "count": 1823,
+    "excluded_low_confidence": 21,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 470,
-    "excluded_known_industrial_sites": 40,
-    "excluded_recurrent_thermal_cells": 430,
+    "excluded_probable_industrial": 382,
+    "excluded_known_industrial_sites": 28,
+    "excluded_recurrent_thermal_cells": 354,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -25,7 +23,7 @@
       "known_sites": 6,
       "history_window_days": 30,
       "recurrent_threshold_distinct_days": 8,
-      "recurrent_cells_in_history": 194,
+      "recurrent_cells_in_history": 176,
       "audit_file": "industrial-thermal.geojson"
     }
   },
@@ -33,25 +31,25 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-11-06T16:45:04.817274Z",
-    "period_start": "2026-10-07",
-    "period_end": "2026-11-06",
-    "count": 425,
-    "total_area_ha": 10016.0,
+    "generated_at": "2026-11-08T00:33:34.763153Z",
+    "period_start": "2026-10-09",
+    "period_end": "2026-11-08",
+    "count": 338,
+    "total_area_ha": 7698.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 261623668,
-    "geojson_bytes": 205032,
+    "archive_bytes": 261647541,
+    "geojson_bytes": 163947,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 425,
-      "total_area_ha": 10016.0,
-      "records_read": 109259,
-      "rejected_outside_period": 108828,
+      "count": 338,
+      "total_area_ha": 7698.0,
+      "records_read": 109262,
+      "rejected_outside_period": 108918,
       "rejected_outside_extent": 6,
       "rejected_invalid_geometry": 0
     }
