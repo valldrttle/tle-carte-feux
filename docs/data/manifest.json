@@ -1,18 +1,20 @@
 {
   "version": 2,
-  "last_run_at": "2026-11-12T11:02:47.700397Z",
-  "last_run_errors": [],
+  "last_run_at": "2026-11-12T19:54:11.389579Z",
+  "last_run_errors": [
+    "EFFIS: HTTPSConnectionPool(host='maps.effis.emergency.copernicus.eu', port=443): Max retries exceeded with url: /effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+%3E%3D+%272026-10-13%27+AND+firedate+%3C%3D+%272026-11-12%27 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1035)'))); HTTPSConnectionPool(host='maps.effis.emergency.copernicus.eu', port=443): Max retries exceeded with url: /effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+BETWEEN+%272026-10-13%27+AND+%272026-11-12%27 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1035)'))); HTTPSConnectionPool(host='maps.effis.emergency.copernicus.eu', port=443): Max retries exceeded with url: /effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1035)')))"
+  ],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-11-12T11:02:47.557962Z",
+    "generated_at": "2026-11-12T19:52:43.649961Z",
     "period_start": "2026-11-06",
     "period_end": "2026-11-12",
-    "count": 1507,
+    "count": 1631,
     "excluded_low_confidence": 13,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 374,
+    "excluded_probable_industrial": 384,
     "excluded_known_industrial_sites": 19,
-    "excluded_recurrent_thermal_cells": 355,
+    "excluded_recurrent_thermal_cells": 365,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -23,7 +25,7 @@
       "known_sites": 6,
       "history_window_days": 30,
       "recurrent_threshold_distinct_days": 8,
-      "recurrent_cells_in_history": 159,
+      "recurrent_cells_in_history": 160,
       "audit_file": "industrial-thermal.geojson"
     }
   },
