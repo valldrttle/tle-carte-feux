@@ -1,20 +1,18 @@
 {
   "version": 2,
-  "last_run_at": "2026-11-13T01:50:14.938968Z",
-  "last_run_errors": [
-    "EFFIS: HTTPSConnectionPool(host='maps.effis.emergency.copernicus.eu', port=443): Max retries exceeded with url: /effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+%3E%3D+%272026-10-14%27+AND+firedate+%3C%3D+%272026-11-13%27 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1035)'))); HTTPSConnectionPool(host='maps.effis.emergency.copernicus.eu', port=443): Max retries exceeded with url: /effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+BETWEEN+%272026-10-14%27+AND+%272026-11-13%27 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1035)'))); HTTPSConnectionPool(host='maps.effis.emergency.copernicus.eu', port=443): Max retries exceeded with url: /effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1035)')))"
-  ],
+  "last_run_at": "2026-11-13T10:56:55.903625Z",
+  "last_run_errors": [],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-11-13T01:48:46.049987Z",
+    "generated_at": "2026-11-13T10:55:56.422736Z",
     "period_start": "2026-11-07",
     "period_end": "2026-11-13",
-    "count": 1315,
+    "count": 1478,
     "excluded_low_confidence": 11,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 291,
-    "excluded_known_industrial_sites": 19,
-    "excluded_recurrent_thermal_cells": 272,
+    "excluded_probable_industrial": 381,
+    "excluded_known_industrial_sites": 21,
+    "excluded_recurrent_thermal_cells": 360,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -25,7 +23,7 @@
       "known_sites": 6,
       "history_window_days": 30,
       "recurrent_threshold_distinct_days": 8,
-      "recurrent_cells_in_history": 148,
+      "recurrent_cells_in_history": 163,
       "audit_file": "industrial-thermal.geojson"
     }
   },
@@ -33,25 +31,25 @@
     "source": "EFFIS / Copernicus - périmètres MODIS supervisés",
     "transport": "WFS SHAPEZIP",
     "layer": "ms:modis.ba.poly",
-    "generated_at": "2026-11-11T19:33:39.841971Z",
-    "period_start": "2026-10-12",
-    "period_end": "2026-11-11",
-    "count": 325,
-    "total_area_ha": 7515.0,
+    "generated_at": "2026-11-13T10:55:56.631556Z",
+    "period_start": "2026-10-14",
+    "period_end": "2026-11-13",
+    "count": 320,
+    "total_area_ha": 7272.0,
     "geographic_extent": [
       -25.0,
       34.0,
       42.0,
       72.0
     ],
-    "archive_bytes": 261794463,
-    "geojson_bytes": 162818,
+    "archive_bytes": 261816684,
+    "geojson_bytes": 159598,
     "filter": "aucun (filtrage local)",
     "processing": {
-      "count": 325,
-      "total_area_ha": 7515.0,
-      "records_read": 109309,
-      "rejected_outside_period": 108978,
+      "count": 320,
+      "total_area_ha": 7272.0,
+      "records_read": 109324,
+      "rejected_outside_period": 108998,
       "rejected_outside_extent": 6,
       "rejected_invalid_geometry": 0
     }
