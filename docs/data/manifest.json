@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "last_run_at": "2026-11-19T02:33:56.032539Z",
+  "last_run_at": "2026-11-19T11:36:46.210763Z",
   "last_run_errors": [
     "EFFIS: 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+%3E%3D+%272026-10-20%27+AND+firedate+%3C%3D+%272026-11-19%27; 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+BETWEEN+%272026-10-20%27+AND+%272026-11-19%27; Le fichier EFFIS dépasse la limite de sécurité de 250 Mio."
   ],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-11-19T02:32:27.353123Z",
+    "generated_at": "2026-11-19T11:35:51.173051Z",
     "period_start": "2026-11-13",
     "period_end": "2026-11-19",
     "count": 1985,
