@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "last_run_at": "2026-11-21T19:13:46.841947Z",
+  "last_run_at": "2026-11-22T01:17:20.467870Z",
   "last_run_errors": [
-    "EFFIS: 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+%3E%3D+%272026-10-22%27+AND+firedate+%3C%3D+%272026-11-21%27; 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+BETWEEN+%272026-10-22%27+AND+%272026-11-21%27; Le fichier EFFIS dépasse la limite de sécurité de 250 Mio."
+    "EFFIS: 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+%3E%3D+%272026-10-23%27+AND+firedate+%3C%3D+%272026-11-22%27; 403 Client Error: Forbidden for url: https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&outputformat=SHAPEZIP&srsName=EPSG%3A4326&CQL_FILTER=firedate+BETWEEN+%272026-10-23%27+AND+%272026-11-22%27; Le fichier EFFIS dépasse la limite de sécurité de 250 Mio."
   ],
   "active_fires": {
     "source": "NASA FIRMS - VIIRS NOAA-20 NRT",
-    "generated_at": "2026-11-21T19:12:52.858804Z",
-    "period_start": "2026-11-15",
-    "period_end": "2026-11-21",
-    "count": 1960,
+    "generated_at": "2026-11-22T01:16:28.610144Z",
+    "period_start": "2026-11-16",
+    "period_end": "2026-11-22",
+    "count": 1597,
     "excluded_low_confidence": 4,
     "excluded_non_vegetation": 0,
-    "excluded_probable_industrial": 417,
-    "excluded_known_industrial_sites": 36,
-    "excluded_recurrent_thermal_cells": 381,
+    "excluded_probable_industrial": 341,
+    "excluded_known_industrial_sites": 35,
+    "excluded_recurrent_thermal_cells": 306,
     "geographic_extent": [
       -25.0,
       34.0,
@@ -25,7 +25,7 @@
       "known_sites": 6,
       "history_window_days": 30,
       "recurrent_threshold_distinct_days": 8,
-      "recurrent_cells_in_history": 140,
+      "recurrent_cells_in_history": 130,
       "audit_file": "industrial-thermal.geojson"
     }
   },
